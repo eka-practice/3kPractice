@@ -6,6 +6,9 @@
 #include <QApplication>
 #include "database.h"
 
+// lor1113@yandex.ru - Андрей
+// Класс мира для симуляции всей модели. Тут создаются и хранятся приёмники и источники, запускается их работа
+
 class AbstractReceiver;
 class AbstractSource;
 class World : public QObject
@@ -15,13 +18,15 @@ class World : public QObject
 public:
     World();
     ~World();
-
+    /// Старт модели
     void modelStart();
 
+    // get/set функции
     static int getModelTime() { return modelTime; }
 
     static int getSyncedOnce();
     static void setSyncedOnce(bool b);
+
     static int getMessageReceived();
     static void setMessageReceived(bool b);
 

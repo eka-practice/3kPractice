@@ -8,17 +8,25 @@
 #include "log.h"
 #include "baseobject.h"
 
+// lor1113@yandex.ru - Андрей
+// Класс для симуляции работы приёмника.
+
 class World;
 class AbstractSource;
 class AbstractReceiver : public BaseObject
 {
     Q_OBJECT
 
-    friend class World;
+    friend class World; // По сути нужен только для того, чтобы вызвать в World'е метод tick из этого класса
+    // Нашёл пример как можно сделать без этого - через template class, записывать сюда ссылку на владельца объекта. Позже попробую
 
 public:
+    /// Конструктор приёмника
+    /// DBRecord - запись базы данных об этом приёмнике
     AbstractReceiver(QSqlRecord DBRecord);
-    virtual ~AbstractReceiver() override;
+    virtual ~AbstractReceiver() override {}
+
+    // get/set функции
 
     bool isSyncing() { return syncing; }
     void setSyncing(bool s) { syncing = s; }
@@ -35,9 +43,11 @@ public:
 
     int getCurCoincidenceSourceNum() { return curCoincidenceSourceNum; }
 
+    /// Функция вычислений после синхронизации с источником
     void SyncedCalcs(QVector<AbstractSource*> *sources);
 
 private:
+    /// tick-функция
     void tick(QVector<AbstractSource*> *sources);
 
     unsigned int Num; // N // Число радиоданных
@@ -53,7 +63,7 @@ private:
     float EstimatedTimeToReceive = 0;
     float newSyncCicleTime = 0;
 
-	AbstractSource *curSrc;
+    AbstractSource *curSrc; // Текущий источник, с которым работает приёмник
 
     int curRadioNum; // Текущий номер радиоданных в последовательности
 

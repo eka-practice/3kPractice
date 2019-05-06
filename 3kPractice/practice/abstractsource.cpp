@@ -1,8 +1,8 @@
 #include "info.h"
 
-AbstractSource::AbstractSource(QSqlRecord DBRecord) // DBRecord - передаём сюда запись из таблицы БД
+AbstractSource::AbstractSource(QSqlRecord DBRecord)
 {
-    // Инициализируем все наши переменные
+    // Считывание переменных из записи БД
     k = DBRecord.value(0).toUInt();
     condition = ECondition(DBRecord.value(1).toInt());
     Number = DBRecord.value(2).toUInt();
@@ -11,7 +11,7 @@ AbstractSource::AbstractSource(QSqlRecord DBRecord) // DBRecord - передаё
     startTime = DBRecord.value(5).toFloat();
     repeatDuration = DBRecord.value(6).toFloat();
     maxRepeatCount = DBRecord.value(7).toUInt();
-    // парсим строку, в которой находится таблица распределения
+    // Парсим строку, в которой находится таблица распределения
     QStringList strLst = DBRecord.value(8).toString().split('|');
     for (int i = 0; i < 99 && i < strLst.length(); i++) {
         QStringList recordStrLst = strLst[i].split(';');
@@ -35,8 +35,7 @@ AbstractSource::AbstractSource(QSqlRecord DBRecord) // DBRecord - передаё
             FSyncLost[i][j] = recordStrLst[j].toFloat();
         }
     }
-
-    syncCancelledTime = startTime + maxSearchTime; // Сделать вычисление в ресивере и set функцию в ворлде
+    syncCancelledTime = startTime + maxSearchTime;
 }
 
 AbstractSource::~AbstractSource() {}
@@ -44,10 +43,12 @@ AbstractSource::~AbstractSource() {}
 void AbstractSource::tick(int modelTime)
 {
     if (started) {
+        // Если время синхронизации вышло - заканчиваем её
         if (syncCancelledTime > modelTime) {
             sending = false;
             curReapeat = 0;
         }
+        // Иначе - инкремент повтора
         else if (startTime <= modelTime) {
             sending = true;
             curReapeat++;

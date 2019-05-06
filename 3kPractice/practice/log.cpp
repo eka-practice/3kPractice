@@ -4,31 +4,20 @@
 
 void Log::CleanLogFile()
 {
-//    logFile = new QFile("Log.txt");
-//    if (!logFile->open(QIODevice::WriteOnly)) {
-//        qDebug() << "Can't open log file!" << endl;
-//    }
-//    else {
-//        ts = new QTextStream(logFile);
-//    }
-
+    // Очистка файла
     QFile file("Log.txt");
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     file.close();
 }
 
-//Log::~Log() {
-////    logFile->close();
-//}
-
 void Log::printMessage(QString message, bool consolePrint, bool logFilePrint)
 {
+    // Вывод в дебаг консоли
     if (consolePrint) {
         qDebug() << message;
     }
+    // Вывод в файл
     if (logFilePrint) {
-        //logFile->write(message.toUtf8());
-
         QFile file("Log.txt");
         if (!file.open(QIODevice::Append | QIODevice::Text))
             return;

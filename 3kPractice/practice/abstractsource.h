@@ -6,6 +6,9 @@
 #include <QVariant>
 #include "baseobject.h"
 
+// lor1113@yandex.ru - Андрей
+// Класс для симуляции работы источника.
+
 class World;
 class AbstractSource;
 class AbstractSource : public BaseObject
@@ -15,8 +18,12 @@ class AbstractSource : public BaseObject
     friend class World;
 
 public:
+    /// Конструктор источника
+    /// DBRecord - запись из БД об источнике
     AbstractSource(QSqlRecord DBRecord);
     virtual ~AbstractSource() override;
+
+    // get-функции
 
     float getStartTime() { return startTime; }
 
@@ -41,6 +48,7 @@ public:
     float getSyncCancelledTime() { return syncCancelledTime; }
 
 private:
+    /// tick-функция
     void tick(int modelTime);
 
     ECondition condition; // У // Условия передачи
@@ -58,11 +66,11 @@ private:
     float maxWaitTime; // tож(k) // Предельное время ожидания при потере синхронизации
     float FSyncLost[99][conditionCount]; // Fпс(k)(t;У) // Плотности распределения времени потери синхронизации приёмника
 
-    float syncCancelledTime;
+    float syncCancelledTime; // Время конца синхронизации
 
-    int curReapeat = 0;
+    int curReapeat = 0; // Текущий номер повтора
 
-    bool sending = false;
+    bool sending = false; // Отправляется ли сообщение
 
 };
 

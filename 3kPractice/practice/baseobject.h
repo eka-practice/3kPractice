@@ -3,6 +3,9 @@
 
 #include <QObject>
 
+// lor1113@yandex.ru - Андрей
+// Базовый класс всех устройств. Содержит основные функции каждого устройства. (start, stop и т. д.) От него наследуются все устройства
+
 class BaseObject : public QObject
 {
     friend class World;
