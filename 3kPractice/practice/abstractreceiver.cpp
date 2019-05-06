@@ -2,26 +2,18 @@
 
 AbstractReceiver::AbstractReceiver(QSqlRecord DBRecord)
 {
+    // Считывание переменных из записи БД
     Num = DBRecord.value(0).toUInt();
-
     QVector<unsigned int> seq;
     QStringList seqStr = DBRecord.value(1).toString().split("|");
-
     for (int i = 0; i < seqStr.length(); i++) {
         seq.push_back(seqStr.at(i).toUInt());
     }
-
     sequence = seq;
     n0 = DBRecord.value(2).toUInt();
-
     seq.clear();
     seqStr.clear();
-
     curRadioNum = int(n0);
-}
-
-AbstractReceiver::~AbstractReceiver() {
-
 }
 
 void AbstractReceiver::tick(QVector<AbstractSource*> *sources)
@@ -121,10 +113,7 @@ void AbstractReceiver::tick(QVector<AbstractSource*> *sources)
 }
 
 void AbstractReceiver::SyncedCalcs(QVector<AbstractSource*> *sources) {
-	// Будет вычисляться сразу после синхронизации
-	// некоторые переменные нужны в классе
-
-	// Моделирование возможности потери синхронизации // Fпс(X) (п;T) - п - текущий повтор? // СЫРО!
+    // Моделирование возможности потери синхронизации
 	curSrc = sources->at(curCoincidenceSourceNum);
     int SyncLostTime = 0;
 	for (int i = curSrc->getCurRepeat(); i < int(curSrc->getMaxRepeatCount()); i++) {
@@ -132,8 +121,7 @@ void AbstractReceiver::SyncedCalcs(QVector<AbstractSource*> *sources) {
 			SyncLostTime = i + int(curSrc->getStartTime());
 			break;
 		}
-	}
-	//EstimatedTimeToReceive = SyncLostTime - World::getModelTime();
+    }
 	float time1 = World::getSyncCancelledTime() + SyncLostTime;
 	float time2 = curSrc->getBrokenTime();
 	float time3 = curSrc->getStartTime() + curSrc->getMaxRepeatCount() * curSrc->getRepeatDuration();
@@ -148,6 +136,6 @@ void AbstractReceiver::SyncedCalcs(QVector<AbstractSource*> *sources) {
         EstimatedTimeToReceive = time3 - World::getSyncCancelledTime();
 	}
 
-	// Непонятно зачем эта переменная, если есть curRepeat и maxRepeatCount в источнике???
-    int EstimatedRepeatsCount = int(EstimatedTimeToReceive) / int(curSrc->getRepeatDuration());
+    // Непонятно зачем эта переменная, если есть curRepeat и maxRepeatCount в источнике
+    int EstimatedRepeatsCount = int(EstimatedTimeToReceive) / int(curSrc->getRepeatDuration()); // дельта П
 }

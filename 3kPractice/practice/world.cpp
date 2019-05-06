@@ -6,12 +6,13 @@ bool World::syncedOnce = false;
 bool World::messageReceived = false;
 int World::lastWorkingInterval = 0;
 float World::syncCancelled = 0;
+
 World::World()
 {
+    // Подключение к БД
     db = new Database();
 
     db->connectToDataBase("Data.db");
-
 
     QSqlQuery *qry = new QSqlQuery();
     // Создание приёмников
@@ -36,14 +37,12 @@ World::World()
     // Инициализация тик-таймера
     thread = new QThread();
     this->moveToThread(thread);
-
     timer = new QTimer();
     timer->setInterval(worldDeltaSeconds);
     connect(timer, SIGNAL(timeout()), this, SLOT(worldTick()));
     timer->moveToThread(thread);
     thread->start();
     QMetaObject::invokeMethod(this, "startTimer", Qt::QueuedConnection);
-
     Log::CleanLogFile();
 
     // Старт модели
