@@ -11,19 +11,19 @@
 // lor1113@yandex.ru - Андрей
 // Класс для симуляции работы приёмника.
 
-class World;
+//class World;
 class AbstractSource;
 class AbstractReceiver : public BaseObject
 {
     Q_OBJECT
 
-    friend class World; // По сути нужен только для того, чтобы вызвать в World'е метод tick из этого класса
+    //friend class World; // По сути нужен только для того, чтобы вызвать в World'е метод tick из этого класса
     // Нашёл пример как можно сделать без этого - через template class, записывать сюда ссылку на владельца объекта. Позже попробую
 
 public:
     /// Конструктор приёмника
     /// DBRecord - запись базы данных об этом приёмнике
-    AbstractReceiver(QSqlRecord DBRecord);
+    AbstractReceiver(QSqlRecord DBRecord, QObject *parent = nullptr);
     virtual ~AbstractReceiver() override {}
 
     // get/set функции

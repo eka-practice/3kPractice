@@ -1,6 +1,6 @@
 #include "info.h"
 
-AbstractSource::AbstractSource(QSqlRecord DBRecord)
+AbstractSource::AbstractSource(QSqlRecord DBRecord, QObject *parent) : BaseObject (parent)
 {
     // Считывание переменных из записи БД
     k = DBRecord.value(0).toUInt();
@@ -36,6 +36,10 @@ AbstractSource::AbstractSource(QSqlRecord DBRecord)
         }
     }
     syncCancelledTime = startTime + maxSearchTime;
+
+    World *w = static_cast<World*>(parent);
+
+    connect(w, SIGNAL(ticked), this, SLOT(tick));
 }
 
 AbstractSource::~AbstractSource() {}

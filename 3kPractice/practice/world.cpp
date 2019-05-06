@@ -20,14 +20,14 @@ World::World()
     qry->exec();
     qry->first();
 
-    receiver = new AbstractReceiver(qry->record());
+    receiver = new AbstractReceiver(qry->record(), this);
 
     // Создание источников
     qry->prepare("SELECT * FROM Source");
     qry->exec();
 
     while(qry->next()) {
-        AbstractSource *newSrc = new AbstractSource(qry->record());
+        AbstractSource *newSrc = new AbstractSource(qry->record(), this);
         sources.push_back(newSrc);
 
         if (newSrc->getSyncCancelledTime() > getLastWorkingInterval()) {
@@ -67,23 +67,25 @@ void World::worldTick() {
         // Запуск устройств
         if (!receiver->isStarted() && World::modelTime == 1) {
             receiver->start();
-            receiver->tick(&sources);
+            //receiver->tick(&sources);
         }
         else {
-            receiver->tick(&sources);
+            //receiver->tick(&sources);
         }
         for (int i = 0; i < sources.length(); i++) {
             if (sources.at(i)->isStarted()){
-                sources.at(i)->tick(World::modelTime);
+                //sources.at(i)->tick(World::modelTime);
             }
             else if (World::modelTime > sources.at(i)->getStartTime()) {
                 sources.at(i)->start();
-                sources.at(i)->tick(World::modelTime);
+                //sources.at(i)->tick(World::modelTime);
             }
         }
 
 		// Добавление времени модели
         World::modelTime += timePerTick / 1000;
+
+        emit ticked();
     }
     else {
         QApplication::exit();

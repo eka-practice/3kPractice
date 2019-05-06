@@ -9,18 +9,18 @@
 // lor1113@yandex.ru - Андрей
 // Класс для симуляции работы источника.
 
-class World;
+//class World;
 class AbstractSource;
 class AbstractSource : public BaseObject
 {
     Q_OBJECT
 
-    friend class World;
+    //friend class World;
 
 public:
     /// Конструктор источника
     /// DBRecord - запись из БД об источнике
-    AbstractSource(QSqlRecord DBRecord);
+    AbstractSource(QSqlRecord DBRecord, QObject *parent = nullptr);
     virtual ~AbstractSource() override;
 
     // get-функции

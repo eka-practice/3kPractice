@@ -1,6 +1,6 @@
 ﻿#include "info.h"
 
-AbstractReceiver::AbstractReceiver(QSqlRecord DBRecord)
+AbstractReceiver::AbstractReceiver(QSqlRecord DBRecord, QObject *parent) : BaseObject (parent)
 {
     // Считывание переменных из записи БД
     Num = DBRecord.value(0).toUInt();
@@ -14,6 +14,10 @@ AbstractReceiver::AbstractReceiver(QSqlRecord DBRecord)
     seq.clear();
     seqStr.clear();
     curRadioNum = int(n0);
+
+    World *w = static_cast<World*>(parent);
+
+    connect(w, SIGNAL(ticked), this, SLOT(tick));
 }
 
 void AbstractReceiver::tick(QVector<AbstractSource*> *sources)

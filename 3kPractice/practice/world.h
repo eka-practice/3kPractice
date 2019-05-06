@@ -60,6 +60,9 @@ private:
 private slots:
     void worldTick();
     void startTimer();
+
+signals:
+    void ticked();
 };
 
 #endif // WORLD_H
