@@ -56,14 +56,6 @@ bool Baseout::isSvyaz(int a, int b)//проверка имеется ли свя
 
 QString Baseout::vidVariant(int a)
 {
-        QSqlDatabase db;
-        db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName("D:\\Qt\\BasaSQ.db");
-        db.open();
-        //Осуществляем запрос
-        QSqlQuery query;
-        query.exec("SELECT Vid FROM Object");
-        //qDebug()<<vid+".png";
-        db.close();
+
         return /*vid+*/"1.png";
 }

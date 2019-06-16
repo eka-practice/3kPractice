@@ -9,7 +9,7 @@ TextOut::TextOut(QObject *parent) : QObject(parent)
     er=rasprRange();
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("D:\\Qt\\BasaSQ.db");
+    db.setDatabaseName("BasaSQ.db");
     db.open();
     //Осуществляем запрос
     QSqlQuery query;
@@ -35,12 +35,8 @@ TextOut::TextOut(QObject *parent) : QObject(parent)
     for (int i = 0; i < svaz.size(); ++i) {
         boolSvaz.append("slategray");
     }
-    query.exec("SELECT Vid FROM Object");
-    while (query.next()){
-    QString vid = query.value(0).toString();
-    qDebug()<<vid;
-    }
-    db.close();
+
+
 }
 int TextOut::getSomeProperty()const
 {
@@ -90,10 +86,11 @@ void TextOut::sortMax(int *a, int *b)
     }
 }
 
-void TextOut::perehodPoisk(int a, int nowTime)
+void TextOut::perehodPoisk(int a, int nowTime)//осуществление перехода поиска у передатчиков
 {
     for (int i = 0; i < nomerVarianta.size(); ++i) {
         if ((nomerVarianta[i].toInt()-1)==a){
+
             if ((nowKanalTime[i]+intervalSvyazi[i])<=nowTime){
                 nowKanalVariant[i]++;
                 int qw=0;
@@ -140,7 +137,7 @@ void TextOut::perehodPoisk(int a, int nowTime)
     }
 }
 
-bool TextOut::dalSvaz(int a, int b)
+bool TextOut::dalSvaz(int a, int b)//функция определяющая находится ли введённые РТР в дальности рангов более чем на один
 {
     QString s=rasprRange();
     sortMax(&a,&b);
@@ -372,7 +369,7 @@ QString TextOut::vidVariant(int a)
 {
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("D:\\Qt\\BasaSQ.db");
+    db.setDatabaseName("BasaSQ.db");
     db.open();
     //Осуществляем запрос
     QSqlQuery query;
@@ -381,12 +378,75 @@ QString TextOut::vidVariant(int a)
     while (query.next()){
     QString vid = query.value(0).toString();
     if(i==a){
+        db.close();
         return vid+".png";
     }
     i++;
     }
     db.close();
     return "1.png";
+}
+
+int TextOut::timeCondition(int a)
+{
+    QSqlDatabase db;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("BasaSQ.db");
+    db.open();
+    //Осуществляем запрос
+    QSqlQuery query;
+    query.exec("SELECT * FROM conditions");
+    int i=0,tmp=0;
+    while (query.next()){
+    QString numCon = query.value(0).toString();
+    QString timeCon = query.value(1).toString();
+    if(i==a){
+        db.close();
+        return timeCon.toInt();
+    }
+    i++;
+    tmp=timeCon.toInt();
+    }
+    db.close();
+    return tmp+20;
+}
+
+int TextOut::kolCon()
+{
+    QSqlDatabase db;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("BasaSQ.db");
+    db.open();
+    //Осуществляем запрос
+    QSqlQuery query;
+    query.exec("SELECT * FROM conditions");
+    int i=0;
+    while (query.next()){
+    QString numCon = query.value(0).toString();
+    QString timeCon = query.value(1).toString();
+    i++;
+    }
+    db.close();
+    return i;
+}
+
+int TextOut::maxConTime()
+{
+    QSqlDatabase db;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("BasaSQ.db");
+    db.open();
+    //Осуществляем запрос
+    QSqlQuery query;
+    query.exec("SELECT * FROM conditions");
+    int i=0;
+    while (query.next()){
+    QString numCon = query.value(0).toString();
+    QString timeCon = query.value(1).toString();
+    i=timeCon.toInt();
+    }
+    db.close();
+    return i+20;
 }
 
 

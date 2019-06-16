@@ -26,6 +26,9 @@ public:
     QVector<QString> boolSvaz; //хранит информацию о цвете линии соединения в данный момент
     int kol;
     int maxR=0;
+    int kolConditions=0;
+    QVector<int> intervalCondition;
+    QVector<int> variantCondition;
     explicit TextOut(QObject *parent = 0);//конструктор
     int getSomeProperty()const;
     int getMaxRProperty()const;
@@ -45,6 +48,9 @@ public:
     Q_INVOKABLE int maxKolRange();//максимальное колличество ртр в ранге
     Q_INVOKABLE int kolAll();//колличество всех приёмников ртр и приёмников
     Q_INVOKABLE QString vidVariant(int a);
+    Q_INVOKABLE int timeCondition(int a);
+    Q_INVOKABLE int kolCon();
+    Q_INVOKABLE int maxConTime();
 
 signals:
     void somePropertyChanged();

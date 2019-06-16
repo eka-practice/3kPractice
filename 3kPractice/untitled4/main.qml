@@ -36,16 +36,17 @@ ApplicationWindow {
     property color lineColor: "slategray"; //цвет по умолчанию
     property int standart: {//стандарт высоты и ширины изображений приёмников
     if (window.height<window.width){
-        if (rangeMax>=kolInRangeMax)
-            return (window.height-200)/rangeMax;
-        else
-            return (window.height-200)/kolInRangeMax;
+        if (rangeMax>=kolInRangeMax){
+
+            return (window.height-200)/rangeMax;}
+        else{
+            return (window.height-200)/kolInRangeMax;}
     }
     else{
-        if (rangeMax>=kolInRangeMax)
-            return (window.width-200)/rangeMax;
-        else
-            return (window.width-200)/kolInRangeMax;
+        if (rangeMax>=kolInRangeMax){
+            return (window.width-200)/rangeMax;}
+        else{
+            return (window.width-200)/kolInRangeMax;}
 
     }
     }
@@ -135,14 +136,7 @@ ApplicationWindow {
                 }
             }
         }
-//        for (var i=0;i<secondreg.model;i++){
-//        ctx.moveTo(firstreg.itemAt(0).x+standart,firstreg.itemAt(0).y+standart/2);
-//        ctx.lineTo(secondreg.itemAt(i).x,secondreg.itemAt(i).y+standart/2);
-//        }
-//        ctx.moveTo(firstreg.itemAt(0).x+standart/2,firstreg.itemAt(0).y);
-//        ctx.bezierCurveTo(100,-110,window.width,0,fourthreg.itemAt(0).x+standart/2,fourthreg.itemAt(0).y);
     }
-
     Canvas {
         x:0
         y:0
@@ -350,7 +344,6 @@ ApplicationWindow {
             }
             var arr=dannie.split(' ');
             while(kolTime==parseInt(arr[3])){
-                console.log("gttt");
                 var tablico=upTablo.itemAt(parseInt(arr[1])-1).text.split('|');
                 upTablo.itemAt(parseInt(arr[1])-1).text=tablico[0]+'|'+arr[2]+'|'+tablico[2];
                 obh.kol++;
@@ -378,6 +371,7 @@ Rectangle{
     border.width: 3
 }
     Dial{
+    id:dial
     x:0
     y:parent.height-standart
     width: standart
@@ -396,10 +390,10 @@ Rectangle{
     border.width: 2
     }
     property variant mass: [10,17,10]//промежутки сколько длиться область неполадок
-    property int allTime:37//заменить на общее время из базы
+    property int allTime:obh.maxConTime()//заменить на общее время из базы
     Repeater{
     id:shkala
-    model:3
+    model:obh.kolCon();
         Rectangle{//разделяющие области
             x:{
                 if (index==0)
@@ -408,7 +402,8 @@ Rectangle{
                     return shkala.itemAt(index-1).x+shkala.itemAt(index-1).width;
             }
             y:aroundSh.y+2;
-            width: { return mass[index]*secHod}
+            width: {
+                return (obh.timeCondition(index+1)-obh.timeCondition(index))*secHod;}
             height: aroundSh.height-4
             border.color: "blue"
             Rectangle{
@@ -418,14 +413,15 @@ Rectangle{
                     var sum=0;
                     var need=-1;
                     for (var i=0;i<=index;i++){
-                        sum+=mass[i];
+                        sum+=(obh.timeCondition(i+1)-obh.timeCondition(i));
                         need++;
-                    }
 
-                    if ((kolTime>=sum-mass[index])&&(kolTime<=sum)){
-                        return secHod*(kolTime+mass[index]-sum);
+                        console.log(sum);
+                    }
+                    if ((kolTime>=(sum-(obh.timeCondition(index+1)-obh.timeCondition(index))))&&(kolTime<=sum)){
+                        return secHod*(kolTime+(obh.timeCondition(index+1)-obh.timeCondition(index))-sum);
                     } else if(sum<=kolTime)
-                        return secHod*mass[index];
+                        return secHod*(obh.timeCondition(index+1)-obh.timeCondition(index));
                 }
                 height: parent.height
                 color: "red"
@@ -435,5 +431,6 @@ Rectangle{
             }
         }
     }
+
 
 }

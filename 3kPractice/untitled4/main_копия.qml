@@ -87,7 +87,7 @@ ApplicationWindow {
                         }
                         h++;
                     }
-                    if ((j<obshSum)&&(j>(obshSum-kolu))){
+                    if ((j<obshSum)&&(j>=(obshSum-kolu))){
                         ctx.beginPath();
                         ctx.strokeStyle=obh.sendColor(i,j);
                         ctx.setLineDash([5, 3]);//задача на отрисовку пунктирных линий
@@ -135,14 +135,7 @@ ApplicationWindow {
                 }
             }
         }
-//        for (var i=0;i<secondreg.model;i++){
-//        ctx.moveTo(firstreg.itemAt(0).x+standart,firstreg.itemAt(0).y+standart/2);
-//        ctx.lineTo(secondreg.itemAt(i).x,secondreg.itemAt(i).y+standart/2);
-//        }
-//        ctx.moveTo(firstreg.itemAt(0).x+standart/2,firstreg.itemAt(0).y);
-//        ctx.bezierCurveTo(100,-110,window.width,0,fourthreg.itemAt(0).x+standart/2,fourthreg.itemAt(0).y);
     }
-
     Canvas {
         x:0
         y:0
@@ -232,7 +225,7 @@ ApplicationWindow {
         height: standart
 
         Image {
-            source: "qrc:/img/antena.png"
+            source: "qrc:/img/"+obh.vidVariant(index);
             anchors.fill: parent
         }
     }
@@ -338,15 +331,16 @@ ApplicationWindow {
             var sumall=obh.kolAll();
             for (var i=0;i<sumall;i++){
                 for (var j=0;j<sumall;j++){
+
                     if (obh.isSvaz(i,j)){
-                        if (obh.sendColor(i,j)=="red"){
+                        if ((obh.sendColor(i,j)=="red")||(obh.sendColor(i,j)=="blue")){
                            obh.getColor(i,j,"");
                         }
+                        obh.perehodPoisk(i,kolTime);
 
                     }
                 }
             }
-            linii.clearline();
             var arr=dannie.split(' ');
             while(kolTime==parseInt(arr[3])){
                 console.log("gttt");
@@ -358,6 +352,7 @@ ApplicationWindow {
                 arr=dannie.split(' ');
             }
 
+            linii.clearline();
     }
 }
 Rectangle{
@@ -433,5 +428,6 @@ Rectangle{
             }
         }
     }
+
 
 }
