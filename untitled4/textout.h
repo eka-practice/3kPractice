@@ -22,6 +22,8 @@ public:
     QVector<QString> svaz;//хранит связи между РТР
     QVector<int> intervalSvyazi;
     QVector<int> nowKanalVariant;
+    QVector<QString> nowKanalsVariants;
+    QVector<QString> nowKanalsTimes;
     QVector<int> nowKanalTime;
     QVector<QString> boolSvaz; //хранит информацию о цвете линии соединения в данный момент
     int kol;

@@ -16,6 +16,14 @@ TextOut::TextOut(QObject *parent) : QObject(parent)
     query.exec("SELECT * FROM RTR");
     while (query.next()){
         QString radio = query.value(2).toString(),str="",num=query.value(0).toString();
+        nowKanalsVariants.append(query.value(3).toString());
+        nowKanalsTimes.append("");
+        for (int i = 0; i < nowKanalsVariants[nowKanalsVariants.size()-1].length(); ++i) {
+            if(nowKanalsVariants[nowKanalsVariants.size()-1][i]==','){
+                nowKanalsTimes[nowKanalsVariants.size()-1]+="0,";
+            }
+        }
+        nowKanalsTimes[nowKanalsVariants.size()-1]+="0";
         radioData.append(radio);
         intervalSvyazi.append(10);
         nomerVarianta.append(num);
@@ -88,53 +96,97 @@ void TextOut::sortMax(int *a, int *b)
 
 void TextOut::perehodPoisk(int a, int nowTime)//осуществление перехода поиска у передатчиков
 {
-    for (int i = 0; i < nomerVarianta.size(); ++i) {
-        if ((nomerVarianta[i].toInt()-1)==a){
-
-            if ((nowKanalTime[i]+intervalSvyazi[i])<=nowTime){
-                nowKanalVariant[i]++;
-                int qw=0;
-                for (int j = 0; j < radioData[i].length(); ++j) {
-
-                    if(radioData[i][j]==','){
-                        qw++;
-                    }
-                }
-                qw++;
-                if (qw< nowKanalVariant[i]){
-                    nowKanalVariant[i]=1;
+    for (int i = 0; i < nomerVarianta.size(); ++i) {//делаем проход по всем доступным вариантам
+        if ((nomerVarianta[i].toInt()-1)==a){//если мы считали нужный нам вариант продолжаем действия
+            int schetSinh=0;//счётчик кол-ва элементов для вектора nowSinh
+            QVector<int> nowSinh;//вектор в который поместим куда смотрит канал в данный момент
+            nowSinh.append(0);//добавляем сразу элемент туда
+            for (int j = 0; j < nowKanalsVariants[i].length(); ++j) {//цикл в котором помещаем данные из nowKanalsVariants в nowSinh
+                if (nowKanalsVariants[i][j]!=','){
+                    nowSinh[schetSinh]*=10;
+                    QString strTmp=""+nowKanalsVariants[i][j];
+                    nowSinh[schetSinh]+=strTmp.toInt();
+                } else if (nowKanalsVariants[i][j]==',') {
+                    nowSinh.append(0);
+                    schetSinh++;
                 }
 
-            nowKanalTime[i]+=intervalSvyazi[i];
             }
+            /**/
+            int schetKolTimer=0;//счётчик кол-ва элементов для вектора nowSinh
+            QVector<int> nowTimer;//вектор в который поместим куда смотрит канал в данный момент
+            nowTimer.append(0);//добавляем сразу элемент туда
+            for (int j = 0; j < nowKanalsTimes[i].length(); ++j) {//цикл в котором помещаем данные из nowKanalsVariants в nowSinh
+                if (nowKanalsTimes[i][j]!=','){
+                    nowTimer[schetKolTimer]*=10;
+                    QString strTmp=""+nowKanalsTimes[i][j];
+                    nowTimer[schetKolTimer]+=strTmp.toInt();
+                } else if (nowKanalsTimes[i][j]==',') {
+                    nowTimer.append(0);
+                    schetKolTimer++;
+                }
 
-            QString str=nomerVarianta[i]+'|';
-            int tmp=1;
-                for (int j = 0; j < radioData[i].length(); ++j) {
+            }
+            /**/
 
-                    if ((tmp==nowKanalVariant[i])&&(radioData[i][j]!=',')){
-                        str+=radioData[i][j];
+            for (int y = 0; y < nowSinh.size(); ++y) {//проходим по всем каналам которые есть
+                if ((nowTimer[y]+intervalSvyazi[i])<=nowTime){//проверяем стоит ли сейчас переместить поиск на другой вариант
+                    nowSinh[y]++;//если это произошло прибавляем в текущем канале смещение куда стоит смотреть
+                    int qw=0;//счётчик кол-ва радиоданных
+                    for (int j = 0; j < radioData[i].length(); ++j) {//проходимся по радиоданным текущего варианта
+                        if(radioData[i][j]==','){
+                            qw++;
+                        }
                     }
-                    if(radioData[i][j]==','){
-                        tmp++;
+                    qw++;//прибавляем к кол-ву 1 из-за того что запятых всегда на 1 меньше чем радиоданных
+                        if (qw< nowSinh[y]){//если мы зашли за большее кол-во радиоданных чем есть
+                            nowSinh[y]=1;//возвращаем в 1
+                        }
+
+                nowTimer[y]+=intervalSvyazi[i];
+                }
+                QString str=nomerVarianta[i]+'|';
+                int tmp=1;
+                    for (int j = 0; j < radioData[i].length(); ++j) {
+                        if ((tmp==nowSinh[y])&&(radioData[i][j]!=',')){
+                            str+=radioData[i][j];
+                        }
+                        if(radioData[i][j]==','){
+                            tmp++;
+                        }
+
+                    }
+                    for (int j = 0; j <svaz.size() ; ++j) {
+                        if (str==svaz[j]){
+
+                            tmp=j;
+                        }
+                    }
+                    if((nowTimer[y]+intervalSvyazi[i])>nowTime){
+                        if((boolSvaz[tmp]=="slategray")||(boolSvaz[tmp]=="red")){
+                            changeString(&boolSvaz[tmp],"С");
+                        }else if((boolSvaz[tmp]=="green")||(boolSvaz[tmp]=="yellow")){
+                            nowTimer[y]++;
+                        }
                     }
 
                 }
-                for (int j = 0; j <svaz.size() ; ++j) {
-                    if (str==svaz[j]){
-                        tmp=j;
-                    }
+            nowKanalsTimes[i]="";
+            nowKanalsVariants[i]="";
+            for (int k = 0; k < nowTimer.size(); ++k) {
+                if ((nowTimer.size()-1)!=k){
+                nowKanalsTimes[i]+=QString::number(nowTimer[k])+',';
+                nowKanalsVariants[i]+=QString::number(nowSinh[k])+',';}
+                else {
+                    nowKanalsTimes[i]+=QString::number(nowTimer[k]);
+                    nowKanalsVariants[i]+=QString::number(nowSinh[k]);
                 }
-                if((nowKanalTime[i]+intervalSvyazi[i])>nowTime){
-                if((boolSvaz[tmp]=="slategray")||(boolSvaz[tmp]=="red")){
-                    changeString(&boolSvaz[tmp],"С");
-                }else if((boolSvaz[tmp]=="green")||(boolSvaz[tmp]=="yellow")){
-                    nowKanalTime[i]++;
-                }
-                }
+            }
+            qDebug()<<nowKanalsTimes[i]<<nowKanalsVariants[i];
             }
 
     }
+
 }
 
 bool TextOut::dalSvaz(int a, int b)//функция определяющая находится ли введённые РТР в дальности рангов более чем на один
