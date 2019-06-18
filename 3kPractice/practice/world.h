@@ -17,9 +17,14 @@ class World : public QObject
 
 public:
     World();
+    World(QStringList* IDs, unsigned int radioNum, int modelTime = 0);
+    World(QStringList *IDs, QVector<unsigned int>* radioNum, int modelTime = 0);
+
     ~World();
-    /// Старт модели
+    // Старт модели
     void modelStart();
+
+    QVector<AbstractSource*>* getSources() { return sources; }
 
     // get/set функции
     static int getModelTime() { return modelTime; }
@@ -34,9 +39,9 @@ public:
     static void setLastWorkingInterval(int num);
 
     static float getSyncCancelledTime();
+    static void setSyncCancelledTime(float time);
 
-    const int worldDeltaSeconds = 1000; // Постоянная для тика времени - 1000мс
-    int timePerTick = 1000; // Время, проходящее в модели за тик // Можно будет менять для изменения скорости мира
+    const int worldDeltaSeconds = 10; // Постоянная для тика времени - 1000мс
 
 private:
     QTimer *timer;
@@ -51,7 +56,7 @@ private:
     static bool messageReceived;
 
     AbstractReceiver *receiver;
-    QVector<AbstractSource*> sources;
+    QVector<AbstractSource*>* sources;
 
     Database *db;
 
@@ -60,9 +65,10 @@ private:
 private slots:
     void worldTick();
     void startTimer();
+    void messageReceivedSlot();
 
 signals:
-    void ticked();
+    void ticked(); // TODO: Должен передавать source'ы
 };
 
 #endif // WORLD_H

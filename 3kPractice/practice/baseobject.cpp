@@ -18,5 +18,3 @@ void BaseObject::stop() {
 		emit workStopped();
     }
 }
-
-//void BaseObject::tick(int modelTime) { }

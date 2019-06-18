@@ -29,6 +29,7 @@ SOURCES += \
     database.cpp \
     abstractsource.cpp \
     abstractreceiver.cpp \
+    retranslator.cpp \
     world.cpp \
     baseobject.cpp \
     log.cpp
@@ -38,6 +39,8 @@ HEADERS += \
     abstractsource.h \
     econdition.h \
     abstractreceiver.h \
+    retranslator.h \
+    timeinterval.h \
     world.h \
     baseobject.h \
     log.h \

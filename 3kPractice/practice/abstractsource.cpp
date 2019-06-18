@@ -1,61 +1,94 @@
-#include "info.h"
+#include "abstractsource.h"
+#include "econdition.h"
+#include "world.h"
+#include "retranslator.h"
 
 AbstractSource::AbstractSource(QSqlRecord DBRecord, QObject *parent) : BaseObject (parent)
 {
     // Считывание переменных из записи БД
-    k = DBRecord.value(0).toUInt();
-    condition = ECondition(DBRecord.value(1).toInt());
-    Number = DBRecord.value(2).toUInt();
-    Ak = DBRecord.value(3).toFloat();
-    Bk = DBRecord.value(4).toFloat();
-    startTime = DBRecord.value(5).toFloat();
-    repeatDuration = DBRecord.value(6).toFloat();
-    maxRepeatCount = DBRecord.value(7).toUInt();
+    ID = DBRecord.value(D_ID).toUInt();
+    k = DBRecord.value(K).toUInt();
+    // Парсим строку, в которой находится таблица временных интервалов
+    conditions = new QVector<TimeInterval*>();
+    QStringList strLst = DBRecord.value(CONDITION).toString().split('|');
+    for (int i = 0; i < strLst.length(); i++) {
+        QStringList recordStrLst = strLst[i].split(';');
+        conditions->append(new TimeInterval {recordStrLst[0].toInt(), ECondition(recordStrLst[1].toInt())});
+    }
+    Number = DBRecord.value(NUMBER).toUInt();
+    Ak = DBRecord.value(AK).toFloat();
+    Bk = DBRecord.value(BK).toFloat();
+    startTime = DBRecord.value(START_TIME).toFloat();
+    repeatDuration = DBRecord.value(REPEAT_DURATION).toFloat();
+    maxRepeatCount = DBRecord.value(MAX_REPEAT_COUNT).toUInt();
     // Парсим строку, в которой находится таблица распределения
-    QStringList strLst = DBRecord.value(8).toString().split('|');
+    strLst = DBRecord.value(F_MESSAGE_SENT).toString().split('|');
     for (int i = 0; i < 99 && i < strLst.length(); i++) {
         QStringList recordStrLst = strLst[i].split(';');
         for (int j = 0; j < conditionCount; j++) {
             FMessageSent[i][j] = recordStrLst[j].toFloat();
         }
     }
-    brokenTime = DBRecord.value(9).toFloat();
-    maxSearchTime = DBRecord.value(10).toFloat();
+    brokenTime = DBRecord.value(BROKEN_TIME).toFloat();
+    maxSearchTime = DBRecord.value(MAX_SEARCH_TIME).toFloat();
     // Парсим строку со значениями вероятности синхронизации с источником
-    strLst = DBRecord.value(11).toString().split('|');
-    for (int i = 0; i < 3 && i < strLst.length(); i++) {
+    strLst = DBRecord.value(MAX_SYNC_PROBABILITY).toString().split('|');
+    for (int i = 0; i < conditionCount && i < strLst.length(); i++) {
         maxSyncProbability[i] = strLst[i].toFloat();
     }
-    maxSearchTime = DBRecord.value(12).toFloat();
-    // парсим строку, в которой находится таблица распределения
-    strLst = DBRecord.value(13).toString().split('|');
-    for (int i = 0; i < 99 && i < strLst.length(); i++) {
-        QStringList recordStrLst = strLst[i].split(';');
-        for (int j = 0; j < conditionCount; j++) {
-            FSyncLost[i][j] = recordStrLst[j].toFloat();
-        }
-    }
+    maxSearchTime = DBRecord.value(MAX_WAIT_TIME).toFloat();
+
+    deviceType = 0;
+
     syncCancelledTime = startTime + maxSearchTime;
 
     World *w = static_cast<World*>(parent);
 
-    connect(w, SIGNAL(ticked), this, SLOT(tick));
+    if (w) {
+        connect(w, SIGNAL(ticked()), this, SLOT(tick()));
+    }
+    else if (Retranslator *r = static_cast<Retranslator*>(parent)) {
+        connect(r, SIGNAL(ticked()), this, SLOT(tick()));
+    }
 }
 
 AbstractSource::~AbstractSource() {}
 
-void AbstractSource::tick(int modelTime)
+ECondition AbstractSource::getCondition(int time)
+{
+    for (int i = 0; i < conditions->length(); i++) {
+        if (conditions->at(i)->time > time) { // Если мы дошли до нужного интервала
+            return conditions->at(i)->condition;
+        }
+    }
+    return conditions->last()->condition;
+}
+
+ECondition AbstractSource::getCondition()
+{
+    for (int i = 0; i < conditions->length(); i++) {
+        if (conditions->at(i)->time > World::getModelTime()) { // Если мы дошли до нужного интервала
+            return conditions->at(i)->condition;
+        }
+    }
+    return conditions->last()->condition;
+}
+
+void AbstractSource::tick()
 {
     if (started) {
         // Если время синхронизации вышло - заканчиваем её
-        if (syncCancelledTime > modelTime) {
+        if (syncCancelledTime > World::getModelTime()) {
             sending = false;
             curReapeat = 0;
         }
         // Иначе - инкремент повтора
-        else if (startTime <= modelTime) {
+        else if (startTime <= World::getModelTime()) {
             sending = true;
             curReapeat++;
         }
+    }
+    else if (startTime != -1 && World::getModelTime() > startTime && World::getModelTime() < brokenTime) {
+        start();
     }
 }

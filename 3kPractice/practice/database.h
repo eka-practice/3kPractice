@@ -17,7 +17,10 @@
 
 #define TABLE_SOURCE            "Source"
 #define TABLE_RECEIVER          "Receiver"
+#define TABLE_DEVICES           "Devices"
 
+#define D_ID                    "ID"
+#define DEVICE_TYPE             "DeviceType"
 #define K                       "K"
 #define CONDITION               "Condition"
 #define NUMBER                  "Number"
@@ -35,6 +38,8 @@
 #define NUM                     "N"
 #define SEQUENCE                "Sequence"
 #define N0                      "n0"
+#define CHANNELS_COUNT          "ChannelsCount"
+#define SEARCH_INTERVAL         "SearchInterval"
 
 class Database : public QObject
 {

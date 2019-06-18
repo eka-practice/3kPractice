@@ -2,15 +2,15 @@
 #include <QDebug>
 #include <QTextStream>
 
-void Log::CleanLogFile()
+void Log::CleanLogFile(QString fileName)
 {
     // Очистка файла
-    QFile file("Log.txt");
+    QFile file(fileName);
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     file.close();
 }
 
-void Log::printMessage(QString message, bool consolePrint, bool logFilePrint)
+void Log::printMessage(QString message, bool consolePrint, bool logFilePrint, QString fileName)
 {
     // Вывод в дебаг консоли
     if (consolePrint) {
@@ -18,7 +18,7 @@ void Log::printMessage(QString message, bool consolePrint, bool logFilePrint)
     }
     // Вывод в файл
     if (logFilePrint) {
-        QFile file("Log.txt");
+        QFile file(fileName);
         if (!file.open(QIODevice::Append | QIODevice::Text))
             return;
 

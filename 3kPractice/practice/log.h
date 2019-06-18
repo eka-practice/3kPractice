@@ -15,9 +15,9 @@ public:
     /// message - сообщение
     /// consolePrint - выводить ли в консоль
     /// filePrint - выводить ли в файл
-    static void printMessage(QString message, bool consolePrint = true, bool filePrint = true);
+    static void printMessage(QString message, bool consolePrint = true, bool filePrint = true, QString fileName = "Log.txt");
     /// Очистка файла
-    static void CleanLogFile();
+    static void CleanLogFile(QString fileName = "Log.txt");
 };
 
 #endif // LOG_H

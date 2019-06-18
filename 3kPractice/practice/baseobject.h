@@ -8,22 +8,21 @@
 
 class BaseObject : public QObject
 {
-    friend class World;
-
     Q_OBJECT
 public:
     explicit BaseObject(QObject *parent = nullptr);
 
     bool isStarted() { return started; }
 
-private:
-    //virtual void tick(int modelTime);
-
     void start();
     void stop();
 
+    unsigned int getID() { return ID; }
+
 protected:
     bool started = false;
+    unsigned int ID;
+    int deviceType;
 
 public slots:
 
