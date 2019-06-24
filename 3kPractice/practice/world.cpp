@@ -7,7 +7,7 @@ int World::modelTime = 1;
 bool World::syncedOnce = false;
 bool World::messageReceived = false;
 int World::lastWorkingInterval = 0;
-float World::syncCancelled = 0;
+int World::syncCancelled = 0;
 
 World::World()
 {
@@ -30,7 +30,7 @@ World::World()
             sources->push_back(newSrc);
 
             if (newSrc->getSyncCancelledTime() > getLastWorkingInterval()) {
-                setLastWorkingInterval(int(newSrc->getSyncCancelledTime()));
+                setLastWorkingInterval(int(newSrc->getBrokenTime()));
             }
         }
         else { // ретранслятор
@@ -38,7 +38,7 @@ World::World()
             sources->push_back(newSrc->getSource());
 
             if (newSrc->getSource()->getSyncCancelledTime() > getLastWorkingInterval()) {
-                setLastWorkingInterval(int(newSrc->getSource()->getSyncCancelledTime()));
+                setLastWorkingInterval(int(newSrc->getSource()->getBrokenTime()));
             }
         }
     }
@@ -84,7 +84,7 @@ World::World(QStringList *IDs, QVector<unsigned int>* radioNum, int modelTime)
                 sources->push_back(newSrc);
 
                 if (newSrc->getSyncCancelledTime() > getLastWorkingInterval()) {
-                    setLastWorkingInterval(int(newSrc->getSyncCancelledTime()));
+                    setLastWorkingInterval(int(newSrc->getBrokenTime()));
                 }
             }
             else { // ретранслятор
@@ -92,7 +92,7 @@ World::World(QStringList *IDs, QVector<unsigned int>* radioNum, int modelTime)
                 sources->push_back(newSrc->getSource());
 
                 if (newSrc->getSource()->getSyncCancelledTime() > getLastWorkingInterval()) {
-                    setLastWorkingInterval(int(newSrc->getSource()->getSyncCancelledTime()));
+                    setLastWorkingInterval(int(newSrc->getSource()->getBrokenTime()));
                 }
             }
         }
@@ -130,11 +130,6 @@ World::World(QStringList *IDs, QVector<unsigned int>* radioNum, int modelTime)
     modelStart();
 
     connect(receiver, SIGNAL(messageReceived()), this, SLOT(messageReceivedSlot()));
-}
-// Удалить конструктор
-World::World(QStringList *IDs, unsigned int radioNum, int modelTime)
-{
-
 }
 
 void World::messageReceivedSlot() {
@@ -176,5 +171,5 @@ void World::setMessageReceived(bool b) { messageReceived = b; }
 int World::getLastWorkingInterval() { return lastWorkingInterval; }
 void World::setLastWorkingInterval(int num) { lastWorkingInterval = num; }
 
-float World::getSyncCancelledTime() { return syncCancelled; }
-void World::setSyncCancelledTime(float time) { syncCancelled = time; }
+int World::getSyncCancelledTime() { return syncCancelled; }
+void World::setSyncCancelledTime(int time) { syncCancelled = time; }

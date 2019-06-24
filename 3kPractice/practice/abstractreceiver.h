@@ -55,9 +55,9 @@ private:
     QVector<unsigned int>* sequence; // k1->k2->k3->...kn->k1 // Порядок следования радиоданных
     QVector<unsigned int>* n0; // n0 // Порядковый номер радиоданных приёмника на нулевое модельное время /// Поидее тоже вектор
     int channelsNum; // Кол-во каналов в приёмнике
-    float searchInterval; // tип // Интервал поиска
+    int searchInterval; // tип // Интервал поиска
 
-    float nextIntervalEnd; // Конец следующего интервала поиска
+    int nextIntervalEnd; // Конец следующего интервала поиска
 
     bool syncing = false; // Флаг попытки синхронизации
     bool synced = false; // Флаг синхронизации
@@ -65,8 +65,8 @@ private:
     int curCoincidenceNum = 0; // Текущее совпадение
     int curCoincidenceSourceNum = 0; // Номер источника совпадения
 
-    float EstimatedTimeToReceive = 0;
-    float newSyncCicleTime = 0;
+    int EstimatedTimeToReceive = 0;
+    int newSyncCicleTime = 0;
 
     AbstractSource *curSrc; // Текущий источник, с которым работает приёмник
 
@@ -74,6 +74,8 @@ private:
     unsigned int syncingNum;
 
     QVector<AbstractSource*> *sources; // Все источники мира
+
+    void notSynced();
 
 signals:
 	void syncSuccess();

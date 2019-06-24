@@ -18,9 +18,9 @@ AbstractSource::AbstractSource(QSqlRecord DBRecord, QObject *parent) : BaseObjec
     Number = DBRecord.value(NUMBER).toUInt();
     Ak = DBRecord.value(AK).toFloat();
     Bk = DBRecord.value(BK).toFloat();
-    startTime = DBRecord.value(START_TIME).toFloat();
-    repeatDuration = DBRecord.value(REPEAT_DURATION).toFloat();
-    maxRepeatCount = DBRecord.value(MAX_REPEAT_COUNT).toUInt();
+    startTime = DBRecord.value(START_TIME).toInt();
+    repeatDuration = DBRecord.value(REPEAT_DURATION).toInt();
+    maxRepeatCount = DBRecord.value(MAX_REPEAT_COUNT).toInt();
     // Парсим строку, в которой находится таблица распределения
     strLst = DBRecord.value(F_MESSAGE_SENT).toString().split('|');
     for (int i = 0; i < 99 && i < strLst.length(); i++) {
@@ -29,14 +29,13 @@ AbstractSource::AbstractSource(QSqlRecord DBRecord, QObject *parent) : BaseObjec
             FMessageSent[i][j] = recordStrLst[j].toFloat();
         }
     }
-    brokenTime = DBRecord.value(BROKEN_TIME).toFloat();
-    maxSearchTime = DBRecord.value(MAX_SEARCH_TIME).toFloat();
+    brokenTime = DBRecord.value(BROKEN_TIME).toInt();
+    maxSearchTime = DBRecord.value(MAX_SEARCH_TIME).toInt();
     // Парсим строку со значениями вероятности синхронизации с источником
     strLst = DBRecord.value(MAX_SYNC_PROBABILITY).toString().split('|');
     for (int i = 0; i < conditionCount && i < strLst.length(); i++) {
         maxSyncProbability[i] = strLst[i].toFloat();
     }
-    maxSearchTime = DBRecord.value(MAX_WAIT_TIME).toFloat();
 
     deviceType = 0;
 

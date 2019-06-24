@@ -17,7 +17,6 @@ class World : public QObject
 
 public:
     World();
-    World(QStringList* IDs, unsigned int radioNum, int modelTime = 0);
     World(QStringList *IDs, QVector<unsigned int>* radioNum, int modelTime = 0);
 
     ~World();
@@ -28,6 +27,7 @@ public:
 
     // get/set функции
     static int getModelTime() { return modelTime; }
+    static void setModelTime(int time) { modelTime = time; }
 
     static int getSyncedOnce();
     static void setSyncedOnce(bool b);
@@ -38,8 +38,8 @@ public:
     static int getLastWorkingInterval();
     static void setLastWorkingInterval(int num);
 
-    static float getSyncCancelledTime();
-    static void setSyncCancelledTime(float time);
+    static int getSyncCancelledTime();
+    static void setSyncCancelledTime(int time);
 
     const int worldDeltaSeconds = 10; // Постоянная для тика времени - 1000мс
 
@@ -60,7 +60,7 @@ private:
 
     Database *db;
 
-    static float syncCancelled; // Модельное время завершения процесса синхронизации
+    static int syncCancelled; // Модельное время завершения процесса синхронизации
 
 private slots:
     void worldTick();

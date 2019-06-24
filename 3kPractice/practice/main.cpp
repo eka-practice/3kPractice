@@ -18,17 +18,13 @@ int main(int argc, char *argv[])
         IDs->append(receiverID.remove("\r\n"));
         int time = file.readLine().toInt();
         QString radioStr = file.readLine();
-        if (radioStr.split('|').length() > 1) {
+        if (radioStr.split('|').length() >= 1) {
             QStringList radioLst = radioStr.split('|');
             QVector<unsigned int> *radioNum = new QVector<unsigned int>();
             for (int i = 0; i < radioLst.length(); i++) {
                 radioNum->push_back(radioLst.at(i).toUInt());
             }
             World *world = new World(IDs, radioNum, time);
-            world->modelStart();
-        }
-        else {
-            World *world = new World(IDs, radioStr.toUInt(), time);
             world->modelStart();
         }
     }

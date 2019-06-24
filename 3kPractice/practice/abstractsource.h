@@ -22,7 +22,7 @@ public:
 
     // get/set-функции
 
-    float getStartTime() { return startTime; }
+    int getStartTime() { return startTime; }
     void setStartTime(float time) { startTime = time; }
 
     ECondition getCondition(int time);
@@ -34,19 +34,21 @@ public:
     float getFMessageSent(int repeatNum) { return FMessageSent[repeatNum][getCondition()]; }
     float getFMessageSent(int repeatNum, int time) { return FMessageSent[repeatNum][getCondition(time)]; }
 
-    float getBrokenTime() { return brokenTime; }
+    int getBrokenTime() { return brokenTime; }
 
-    float getRepeatDuration() { return repeatDuration; }
+    int getRepeatDuration() { return repeatDuration; }
 
-    float getMaxWaitTime() { return maxWaitTime; }
+    int getMaxWaitTime() { return maxWaitTime; }
 
-    unsigned int getMaxRepeatCount() { return maxRepeatCount; }
+    int getMaxSearchTime() { return maxSearchTime; }
+
+    int getMaxRepeatCount() { return maxRepeatCount; }
 
     int getCurRepeat() { return curReapeat; }
 
     unsigned int getK() { return k; }
 
-    float getSyncCancelledTime() { return syncCancelledTime; }
+    int getSyncCancelledTime() { return syncCancelledTime; }
 
 protected slots:
     // tick-функция
@@ -58,21 +60,23 @@ private:
     unsigned int Number; // № // Номер объекта плучателя 1-99
     float Ak; // A(k) // Расстояние до источника
     float Bk; // B(k) // Азимут направления 0-360
-    float startTime; // Тн(k) // Время начала передачи сообщения
-    float repeatDuration; // tп(k) // Длительность повтора
-    unsigned int maxRepeatCount; // П(k) // Предельно возможное число повторов 1-99
+    int startTime; // Тн(k) // Время начала передачи сообщения
+    int repeatDuration; // tп(k) // Длительность повтора
+    int maxRepeatCount; // П(k) // Предельно возможное число повторов 1-99
     float FMessageSent[99][conditionCount]; // Fд(k)(t;У) // Плотности распределения времени доведения сообщения
-    float brokenTime; // Tп(k) // Время выхода из строя
-    float maxSearchTime; // tис(k) // Предельное время поиска приёмника
+    int brokenTime; // Tп(k) // Время выхода из строя
+    int maxSearchTime; // tис(k) // Предельное время поиска приёмника
     float maxSyncProbability[conditionCount]; // Pус(k, y) // Предельная вероятность синхронизации
-    float maxWaitTime; // tож(k) // Предельное время ожидания при потере синхронизации
+    int maxWaitTime; // tож(k) // Предельное время ожидания при потере синхронизации
 
-    float syncCancelledTime; // Время конца синхронизации
+    int syncCancelledTime; // Время конца синхронизации
 
     int curReapeat = 0; // Текущий номер повтора
 
     bool sending = false; // Отправляется ли сообщение
 
 };
+
+// сделать задержки
 
 #endif // ABSTRACTSOURCE_H
