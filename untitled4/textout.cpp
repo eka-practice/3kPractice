@@ -9,27 +9,23 @@ TextOut::TextOut(QObject *parent) : QObject(parent)
     er=rasprRange();
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("BasaSQ.db");
+    db.setDatabaseName("Data.db");
     db.open();
-    //Осуществляем запрос
     QSqlQuery query;
-    query.exec("SELECT * FROM RTR");
+    query.exec("SELECT * FROM RTR");//Осуществляем запрос
     while (query.next()){
-        QString radio = query.value(2).toString(),str="",num=query.value(0).toString();
-        nowKanalsVariants.append(query.value(3).toString());
-        nowKanalsTimes.append("");
+        QString radio = query.value(2).toString(),str="",num=query.value(0).toString();//распределяем радиоданные и номер объекта
+        nowKanalsVariants.append(query.value(3).toString());//устанавливаем куда смотрит объект сейчас
+        nowKanalsTimes.append("");//добавляем место под время каналов
         for (int i = 0; i < nowKanalsVariants[nowKanalsVariants.size()-1].length(); ++i) {
             if(nowKanalsVariants[nowKanalsVariants.size()-1][i]==','){
-                nowKanalsTimes[nowKanalsVariants.size()-1]+="0,";
+                nowKanalsTimes[nowKanalsVariants.size()-1]+="0,";//устанавливаем каждому каналу его текущее время
             }
         }
-        nowKanalsTimes[nowKanalsVariants.size()-1]+="0";
-        radioData.append(radio);
-        intervalSvyazi.append(10);
-        nomerVarianta.append(num);
-        nowKanalTime.append(0);
-        nowKanalVariant.append(1);
-        for (int i = 0; i < radio.length(); ++i) {
+        nowKanalsTimes[nowKanalsVariants.size()-1]+="0";//последний канал который находится за последней зхапятой
+        radioData.append(radio);//записываем радиоданные
+        nomerVarianta.append(num);//записываем номер текущего объекта который мы считали из базы
+        for (int i = 0; i < radio.length(); ++i) {//формируем линии связи для отрисовки в qml по радиоданным
             if (radio[i]!=','){
                 str+=radio[i];
             } else if(radio[i]==','){
@@ -40,8 +36,17 @@ TextOut::TextOut(QObject *parent) : QObject(parent)
         svaz.append(num+'|'+str);
 
     }
+    query.exec("SELECT SearchInterval FROM Devices");//запрашиваем интервалы
+    while (query.next()){
+        QString strTmp=query.value(0).toString();
+        if (strTmp!=""){
+            intervalSvyazi.append(strTmp.toInt());//Если значение в базе не Null устанавливаем то что в базе
+        }
+        else{intervalSvyazi.append(-1);}
+    }
+
     for (int i = 0; i < svaz.size(); ++i) {
-        boolSvaz.append("slategray");
+        boolSvaz.append("slategray");//устанавливаем для каждой линии связи цвет по умолчанию
     }
 
 
@@ -85,7 +90,7 @@ void TextOut::changeString(QString *s, QString er)//функция меняющ�
     }
 }
 
-void TextOut::sortMax(int *a, int *b)
+void TextOut::sortMax(int *a, int *b)//функция меняющая переменные местами если a<b
 {
     if (*a<*b){
         int tmp=*b;
@@ -97,7 +102,8 @@ void TextOut::sortMax(int *a, int *b)
 void TextOut::perehodPoisk(int a, int nowTime)//осуществление перехода поиска у передатчиков
 {
     for (int i = 0; i < nomerVarianta.size(); ++i) {//делаем проход по всем доступным вариантам
-        if ((nomerVarianta[i].toInt()-1)==a){//если мы считали нужный нам вариант продолжаем действия
+        qDebug()<<nomerVarianta.size();
+        if ((nomerVarianta[i].toInt()-1)==a && intervalSvyazi[i]!=-1){//если мы считали нужный нам вариант продолжаем действия
             int schetSinh=0;//счётчик кол-ва элементов для вектора nowSinh
             QVector<int> nowSinh;//вектор в который поместим куда смотрит канал в данный момент
             nowSinh.append(0);//добавляем сразу элемент туда
@@ -112,7 +118,6 @@ void TextOut::perehodPoisk(int a, int nowTime)//осуществление пе�
                 }
 
             }
-            /**/
             int schetKolTimer=0;//счётчик кол-ва элементов для вектора nowSinh
             QVector<int> nowTimer;//вектор в который поместим куда смотрит канал в данный момент
             nowTimer.append(0);//добавляем сразу элемент туда
@@ -127,7 +132,6 @@ void TextOut::perehodPoisk(int a, int nowTime)//осуществление пе�
                 }
 
             }
-            /**/
 
             for (int y = 0; y < nowSinh.size(); ++y) {//проходим по всем каналам которые есть
                 if ((nowTimer[y]+intervalSvyazi[i])<=nowTime){//проверяем стоит ли сейчас переместить поиск на другой вариант
@@ -182,7 +186,6 @@ void TextOut::perehodPoisk(int a, int nowTime)//осуществление пе�
                     nowKanalsVariants[i]+=QString::number(nowSinh[k]);
                 }
             }
-            qDebug()<<nowKanalsTimes[i]<<nowKanalsVariants[i];
             }
 
     }
@@ -287,57 +290,41 @@ bool TextOut::isSvaz(int a, int b)//проверка имеется ли свя�
 void TextOut::maxRange(int *t)//функция определения максимального ранга
 {
     int maxi=0;
-    QFile file(":/txt/range.txt");
-        if ((file.exists())&&(file.open(QIODevice::ReadOnly)))
-        {
-
-            while(!file.atEnd()){
-                    QString s=file.readLine(),str="";
-                    int i=0;
-                    bool flag=false;
-                    while (s[i]!='\0'){
-                        if (flag){
-                            str+=s[i];
-                        }
-                        if (s[i]==' '){
-                            flag=true;
-                        }
-                        i++;
-                    }
-                    if (str.toInt()>maxi){
-                        maxi=str.toInt();
-                    }
+        QSqlDatabase db;
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName("Data.db");
+        db.open();
+        //Осуществляем запрос
+        QSqlQuery query;
+        query.exec("SELECT Rank FROM Devices");
+        while (query.next()){
+            QString str=query.value(0).toString();
+            if (str.toInt()>maxi){
+                maxi=str.toInt();
             }
         }
+        db.close();
         *t=maxi+1;
 }
 
 QString TextOut::rasprRange()//Функция просматривающая как распределяются ранги
 {
     int ar[maxR];
-    for (int i = 0; i < maxR; ++i) {
-        ar[i]=0;
-    }
-    QFile file(":/txt/range.txt");
-        if ((file.exists())&&(file.open(QIODevice::ReadOnly)))
-        {
-            while(!file.atEnd()){
-                QString s=file.readLine(),str="";
-                int i=0;
-                bool flag=false;
-                while (s[i]!='\0'){
-                    if (flag){
-                        str+=s[i];
-                    }
-                    if (s[i]==' '){
-                        flag=true;
-                    }
-                    i++;
-                }
-                ar[str.toInt()]++;
-
+        for (int i = 0; i < maxR; ++i) {
+            ar[i]=0;
         }
-}
+        /**/
+        QSqlDatabase db;
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName("Data.db");
+        db.open();
+        //Осуществляем запрос
+        QSqlQuery query;
+        query.exec("SELECT Rank FROM Devices");
+        while (query.next()){
+            QString str=query.value(0).toString();
+            ar[str.toInt()]++;
+        }
         QString itog="";
         for (int i = 0; i < maxR; ++i) {
             itog+=QString::number(i)+' '+QString::number(ar[i])+' ';
@@ -349,84 +336,66 @@ QString TextOut::rasprRange()//Функция просматривающая к�
 
 int TextOut::maxKolRange()
 {
-    int ar[maxR];
     int maxt=0;
-    for (int i = 0; i < maxR; ++i) {
-        ar[i]=0;
-    }
-    QFile file(":/txt/range.txt");
-        if ((file.exists())&&(file.open(QIODevice::ReadOnly)))
-        {
-            while(!file.atEnd()){
-                QString s=file.readLine(),str="";
-                int i=0;
-                bool flag=false;
-                while (s[i]!='\0'){
-                    if (flag){
-                        str+=s[i];
-                    }
-                    if (s[i]==' '){
-                        flag=true;
-                    }
-                    i++;
-                }
-                ar[str.toInt()]++;
-
-        }
-}
-        QString itog="";
+        int ar[maxR];
         for (int i = 0; i < maxR; ++i) {
-            if (ar[i]>maxt){
-                maxt=ar[i];
-            }
+            ar[i]=0;
         }
-        return maxt;
+        /**/
+        QSqlDatabase db;
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName("Data.db");
+        db.open();
+        //Осуществляем запрос
+        QSqlQuery query;
+        query.exec("SELECT Rank FROM Devices");
+        while (query.next()){
+            QString str=query.value(0).toString();
+            ar[str.toInt()]++;
+        }
+            for (int i = 0; i < maxR; ++i) {
+                if (ar[i]>maxt){
+                    maxt=ar[i];
+                }
+            }
+            return maxt;
 }
 
 int TextOut::kolAll()//количество всех РТР приёмников и источников
 {
     int sumAll=0;
-    int ar[maxR];
-    for (int i = 0; i < maxR; ++i) {
-        ar[i]=0;
-    }
-    QFile file(":/txt/range.txt");
-        if ((file.exists())&&(file.open(QIODevice::ReadOnly)))
-        {
-            while(!file.atEnd()){
-                QString s=file.readLine(),str="";
-                int i=0;
-                bool flag=false;
-                while (s[i]!='\0'){
-                    if (flag){
-                        str+=s[i];
-                    }
-                    if (s[i]==' '){
-                        flag=true;
-                    }
-                    i++;
-                }
-                ar[str.toInt()]++;
-
-        }
-}
-        QString itog="";
+        int ar[maxR];
         for (int i = 0; i < maxR; ++i) {
-            sumAll+=ar[i];
+            ar[i]=0;
         }
-        return sumAll;
+        /**/
+        QSqlDatabase db;
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName("Data.db");
+        db.open();
+        //Осуществляем запрос
+        QSqlQuery query;
+        query.exec("SELECT Rank FROM Devices");
+        while (query.next()){
+            QString str=query.value(0).toString();
+            ar[str.toInt()]++;
+        }
+            for (int i = 0; i < maxR; ++i) {
+                sumAll+=ar[i];
+            }
+            return sumAll;
 }
 
 QString TextOut::vidVariant(int a)
 {
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("BasaSQ.db");
+    db.setDatabaseName("Data.db");
     db.open();
     //Осуществляем запрос
     QSqlQuery query;
     int i=0;
-    query.exec("SELECT Vid FROM Object");
+    query.exec("SELECT ImageType FROM Devices");
     while (query.next()){
     QString vid = query.value(0).toString();
     if(i==a){
@@ -443,7 +412,7 @@ int TextOut::timeCondition(int a)
 {
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("BasaSQ.db");
+    db.setDatabaseName("Data.db");
     db.open();
     //Осуществляем запрос
     QSqlQuery query;
@@ -467,7 +436,7 @@ int TextOut::kolCon()
 {
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("BasaSQ.db");
+    db.setDatabaseName("Data.db");
     db.open();
     //Осуществляем запрос
     QSqlQuery query;
@@ -486,7 +455,7 @@ int TextOut::maxConTime()
 {
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("BasaSQ.db");
+    db.setDatabaseName("Data.db");
     db.open();
     //Осуществляем запрос
     QSqlQuery query;

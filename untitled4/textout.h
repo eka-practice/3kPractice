@@ -21,10 +21,8 @@ public:
     QVector<QString> radioData; //хранит радиоданные по которым идёт вариант
     QVector<QString> svaz;//хранит связи между РТР
     QVector<int> intervalSvyazi;
-    QVector<int> nowKanalVariant;
     QVector<QString> nowKanalsVariants;
     QVector<QString> nowKanalsTimes;
-    QVector<int> nowKanalTime;
     QVector<QString> boolSvaz; //хранит информацию о цвете линии соединения в данный момент
     int kol;
     int maxR=0;

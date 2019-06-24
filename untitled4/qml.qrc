@@ -5,11 +5,12 @@
         <file>main_копия.qml</file>
     </qresource>
     <qresource prefix="/img">
-        <file>antena.png</file>
         <file>1.png</file>
         <file>2.png</file>
         <file>3.png</file>
         <file>4.png</file>
+        <file>5.png</file>
+        <file>antena.png</file>
     </qresource>
     <qresource prefix="/txt">
         <file>input.txt</file>

@@ -36,16 +36,17 @@ ApplicationWindow {
     property color lineColor: "slategray"; //цвет по умолчанию
     property int standart: {//стандарт высоты и ширины изображений приёмников
     if (window.height<window.width){
-        if (rangeMax>=kolInRangeMax)
-            return (window.height-200)/rangeMax;
-        else
-            return (window.height-200)/kolInRangeMax;
+        if (rangeMax>=kolInRangeMax){
+
+            return (window.height-200)/rangeMax;}
+        else{
+            return (window.height-200)/kolInRangeMax;}
     }
     else{
-        if (rangeMax>=kolInRangeMax)
-            return (window.width-200)/rangeMax;
-        else
-            return (window.width-200)/kolInRangeMax;
+        if (rangeMax>=kolInRangeMax){
+            return (window.width-200)/rangeMax;}
+        else{
+            return (window.width-200)/kolInRangeMax;}
 
     }
     }
@@ -154,7 +155,7 @@ ApplicationWindow {
     Repeater{
     id: allSquare
     model:allKol
-    Rectangle{
+    Image{
         x:{
             var s=obh.rasprRange();
             var obshSum=0;
@@ -223,11 +224,7 @@ ApplicationWindow {
         }
         width: standart
         height: standart
-
-        Image {
-            source: "qrc:/img/"+obh.vidVariant(index);
-            anchors.fill: parent
-        }
+        source: "qrc:/img/"+obh.vidVariant(index);
     }
     }
     Repeater{
@@ -300,7 +297,7 @@ ApplicationWindow {
 
 
         }
-        text: (index+1).toString()+'| '+'| '
+        text: (index+1).toString()+'| '+'|'+qwer.timeBroken(index);
         Rectangle{
             x:-2
             y:-2
@@ -327,6 +324,18 @@ ApplicationWindow {
         repeat: true
         running: true
         onTriggered: {
+            for (var i=0;i<upTablo.model;i++){
+                var tablo=upTablo.itemAt(i).text.split('|');
+                console.log(tablo[2]);
+                tablo[2]-=1;
+                if (tablo[2]>=0){
+                upTablo.itemAt(i).text=tablo[0]+'|'+tablo[1]+'|'+tablo[2];
+                }
+                else if(tablo[2]<0)
+                {
+                    allSquare.itemAt(i).source="qrc:/img/5.png";
+                }
+            }
             kolTime++;
             var sumall=obh.kolAll();
             for (var i=0;i<sumall;i++){
@@ -343,7 +352,6 @@ ApplicationWindow {
             }
             var arr=dannie.split(' ');
             while(kolTime==parseInt(arr[3])){
-                console.log("gttt");
                 var tablico=upTablo.itemAt(parseInt(arr[1])-1).text.split('|');
                 upTablo.itemAt(parseInt(arr[1])-1).text=tablico[0]+'|'+arr[2]+'|'+tablico[2];
                 obh.kol++;
@@ -371,6 +379,7 @@ Rectangle{
     border.width: 3
 }
     Dial{
+    id:dial
     x:0
     y:parent.height-standart
     width: standart
@@ -388,20 +397,21 @@ Rectangle{
     border.color: "black"
     border.width: 2
     }
-    property variant mass: [10,17,10]//промежутки сколько длиться область неполадок
-    property int allTime:37//заменить на общее время из базы
+    property int allTime:obh.maxConTime()//заменить на общее время из базы
     Repeater{
     id:shkala
-    model:3
+    model:obh.kolCon();
         Rectangle{//разделяющие области
             x:{
+                console.log(obh.kolCon())
                 if (index==0)
                     return aroundSh.x+2;
                 else
                     return shkala.itemAt(index-1).x+shkala.itemAt(index-1).width;
             }
             y:aroundSh.y+2;
-            width: { return mass[index]*secHod}
+            width: {
+                return (obh.timeCondition(index+1)-obh.timeCondition(index))*secHod;}
             height: aroundSh.height-4
             border.color: "blue"
             Rectangle{
@@ -410,20 +420,31 @@ Rectangle{
                 width: {
                     var sum=0;
                     var need=-1;
-                    for (var i=0;i<=index;i++){
-                        sum+=mass[i];
-                        need++;
-                    }
 
-                    if ((kolTime>=sum-mass[index])&&(kolTime<=sum)){
-                        return secHod*(kolTime+mass[index]-sum);
+                    for (var i=0;i<=index;i++){
+                        sum+=(obh.timeCondition(i+1)-obh.timeCondition(i));
+                        need++;
+
+                    }
+                    if ((kolTime>=(sum-(obh.timeCondition(index+1)-obh.timeCondition(index))))&&(kolTime<=sum)){
+                        return secHod*(kolTime+(obh.timeCondition(index+1)-obh.timeCondition(index))-sum);
                     } else if(sum<=kolTime)
-                        return secHod*mass[index];
+                        return secHod*(obh.timeCondition(index+1)-obh.timeCondition(index));
                 }
                 height: parent.height
-                color: "red"
+                color: {
+                    if (parseInt(qwer.numCondition(index))==10){
+                    return "tomato";}
+                    else if (parseInt(qwer.numCondition(index))==20){
+                    return "orangered";}
+                    else if (parseInt(qwer.numCondition(index))==30){
+                    return "red";}
+                    else {
+                    return "darkred";}
+
+                }
                 Text {
-                    text: qsTr("Условие"+index.toString())
+                    text: qsTr(qwer.numCondition(index))
                 }
             }
         }
