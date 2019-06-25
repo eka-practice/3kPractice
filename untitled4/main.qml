@@ -1,4 +1,4 @@
-import QtQuick.Window 2.2
+﻿import QtQuick.Window 2.2
 import QtQuick 2.10
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
@@ -422,7 +422,6 @@ Rectangle{//отображение счётчика времени
                     var sum=0;
                     for (var i=0;i<=index;i++){
                         sum+=(obh.timeCondition(i+1)-obh.timeCondition(i));
-                        need++;
 
                     }
                     if ((kolTime>=(sum-(obh.timeCondition(index+1)-obh.timeCondition(index))))&&(kolTime<=sum)){
