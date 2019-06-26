@@ -1,14 +1,14 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2019-03-21T09:06:39
+# Project created by QtCreator 2019-06-21T13:01:50
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = practice
+TARGET = PM2
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -25,25 +25,36 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        main.cpp \
     database.cpp \
-    abstractsource.cpp \
-    abstractreceiver.cpp \
-    world.cpp \
-    baseobject.cpp \
-    log.cpp
+    receiver.cpp \
+    source.cpp \
+    firstprocedure.cpp \
+    main.cpp \
+    mainwindow.cpp \
+    data.cpp \
+    secondprocedure.cpp \
+    thirdprocedure.cpp \
+    firstwidget.cpp \
+    thirdwidget.cpp \
+    secondwidget.cpp
 
 HEADERS += \
     database.h \
-    abstractsource.h \
-    econdition.h \
-    abstractreceiver.h \
-    world.h \
-    baseobject.h \
-    log.h \
-    info.h
+    receiver.h \
+    source.h \
+    firstprocedure.h \
+    mainwindow.h \
+    data.h \
+    secondprocedure.h \
+    thirdprocedure.h \
+    firstwidget.h \
+    thirdwidget.h \
+    secondwidget.h
 
-FORMS +=
+FORMS += \
+    firstwidget.ui \
+    thirdwidget.ui \
+    secondwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

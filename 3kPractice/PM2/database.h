@@ -10,15 +10,18 @@
 #include <QDate>
 #include <QDebug>
 
-// lor1113@yandex.ru - Андрей
-// Класс для работы с БД. Всё работает так же, как и в программе о алгоритму Дейкстры
+// danilagribkov@bk.ru - Даниил
+// Класс для работы с БД.
 
 // Директивы имен таблиц и их полей
 
 #define TABLE_SOURCE            "Source"
 #define TABLE_RECEIVER          "Receiver"
+#define TABLE_DEVICES           "Devices"
 
-#define K                       "K"
+#define D_ID                    "ID"
+#define DEVICE_TYPE             "DeviceType"
+#define Ka                       "K"
 #define CONDITION               "Condition"
 #define NUMBER                  "Number"
 #define AK                      "Ak"
@@ -35,6 +38,8 @@
 #define NUM                     "N"
 #define SEQUENCE                "Sequence"
 #define N0                      "n0"
+#define CHANNELS_COUNT          "ChannelsCount"
+#define SEARCH_INTERVAL         "SearchInterval"
 
 class Database : public QObject
 {

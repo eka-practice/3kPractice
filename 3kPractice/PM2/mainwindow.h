@@ -1,6 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
+// danilagribkov@bk.ru - Даниил
 #include <QMainWindow>
 
 namespace Ui {

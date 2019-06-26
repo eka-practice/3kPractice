@@ -1,5 +1,5 @@
 #include "database.h"
-
+// danilagribkov@bk.ru - Даниил
 Database::Database(QObject *parent) : QObject(parent) { }
 
 Database::~Database()
@@ -61,7 +61,7 @@ bool Database::createDeviceTable()
     // Создание таблиц через SQL запрос
     QSqlQuery query;
     if(!query.exec( "CREATE TABLE " TABLE_SOURCE " ("
-                        K                       " INTEGER       NOT NULL UNIQUE PRIMARY KEY CHECK (N <= 99),"
+                        Ka                      " INTEGER       NOT NULL UNIQUE PRIMARY KEY CHECK (N <= 99),"
                         CONDITION               " INTEGER (3)   NOT NULL CHECK (Condition <= 3),"
                         NUMBER                  " INTEGER       NOT NULL,"
                         AK                      " DOUBLE        NOT NULL,"
@@ -86,7 +86,4 @@ bool Database::createDeviceTable()
     }
     return false; // в любом другом случае возвращаем false
 }
-
-
-
 
