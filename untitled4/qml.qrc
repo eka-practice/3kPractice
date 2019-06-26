@@ -14,6 +14,5 @@
     </qresource>
     <qresource prefix="/txt">
         <file>input.txt</file>
-        <file>range.txt</file>
     </qresource>
 </RCC>

@@ -10,7 +10,7 @@ TextOut::TextOut(QObject *parent) : QObject(parent)
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("Data.db");
-    db.open();
+    if (db.open()){
     QSqlQuery query;
     query.exec("SELECT * FROM RTR");//Осуществляем запрос
     while (query.next()){
@@ -49,7 +49,9 @@ TextOut::TextOut(QObject *parent) : QObject(parent)
         boolSvaz.append("slategray");//устанавливаем для каждой линии связи цвет по умолчанию
     }
 
-
+    }else{
+        qDebug()<<"Data.db is not open";
+    }
 }
 int TextOut::getSomeProperty()const
 {
@@ -102,7 +104,6 @@ void TextOut::sortMax(int *a, int *b)//функция меняющая пере�
 void TextOut::perehodPoisk(int a, int nowTime)//осуществление перехода поиска у передатчиков
 {
     for (int i = 0; i < nomerVarianta.size(); ++i) {//делаем проход по всем доступным вариантам
-        qDebug()<<nomerVarianta.size();
         if ((nomerVarianta[i].toInt()-1)==a && intervalSvyazi[i]!=-1){//если мы считали нужный нам вариант продолжаем действия
             int schetSinh=0;//счётчик кол-ва элементов для вектора nowSinh
             QVector<int> nowSinh;//вектор в который поместим куда смотрит канал в данный момент
@@ -269,7 +270,11 @@ QString TextOut::readFile(int t)//считывание нужной строки
                 i++;
             }
         }
-        return "-1";
+        else{
+            qDebug()<<"input.txt is not open";
+            return "-1";
+        }
+
 }
 
 
@@ -293,7 +298,7 @@ void TextOut::maxRange(int *t)//функция определения макси
         QSqlDatabase db;
         db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName("Data.db");
-        db.open();
+        if (db.open()){
         //Осуществляем запрос
         QSqlQuery query;
         query.exec("SELECT Rank FROM Devices");
@@ -305,6 +310,9 @@ void TextOut::maxRange(int *t)//функция определения макси
         }
         db.close();
         *t=maxi+1;
+        } else{
+            qDebug()<<"Data.db is not open";
+        }
 }
 
 QString TextOut::rasprRange()//Функция просматривающая как распределяются ранги
@@ -317,7 +325,7 @@ QString TextOut::rasprRange()//Функция просматривающая к�
         QSqlDatabase db;
         db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName("Data.db");
-        db.open();
+        if (db.open()){
         //Осуществляем запрос
         QSqlQuery query;
         query.exec("SELECT Rank FROM Devices");
@@ -330,8 +338,11 @@ QString TextOut::rasprRange()//Функция просматривающая к�
             itog+=QString::number(i)+' '+QString::number(ar[i])+' ';
         }
         itog+='.';
-
         return itog;
+        }else {
+            qDebug()<<"Data.db is not open";
+            return "error";
+        }
 }
 
 int TextOut::maxKolRange()
@@ -345,7 +356,7 @@ int TextOut::maxKolRange()
         QSqlDatabase db;
         db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName("Data.db");
-        db.open();
+        if (db.open()){
         //Осуществляем запрос
         QSqlQuery query;
         query.exec("SELECT Rank FROM Devices");
@@ -358,6 +369,9 @@ int TextOut::maxKolRange()
                     maxt=ar[i];
                 }
             }
+        }else{
+            qDebug()<<"Data.db is not open";
+        }
             return maxt;
 }
 
@@ -372,7 +386,7 @@ int TextOut::kolAll()//количество всех РТР приёмников
         QSqlDatabase db;
         db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName("Data.db");
-        db.open();
+        if (db.open()){
         //Осуществляем запрос
         QSqlQuery query;
         query.exec("SELECT Rank FROM Devices");
@@ -383,6 +397,10 @@ int TextOut::kolAll()//количество всех РТР приёмников
             for (int i = 0; i < maxR; ++i) {
                 sumAll+=ar[i];
             }
+        db.close();
+        }else{
+            qDebug()<<"Data.db is not open";
+        }
             return sumAll;
 }
 
@@ -391,7 +409,7 @@ QString TextOut::vidVariant(int a)
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("Data.db");
-    db.open();
+    if (db.open()){
     //Осуществляем запрос
     QSqlQuery query;
     int i=0;
@@ -405,6 +423,10 @@ QString TextOut::vidVariant(int a)
     i++;
     }
     db.close();
+    } else{
+        qDebug()<<"Data.db is not open";
+    }
+
     return "1.png";
 }
 
@@ -413,7 +435,7 @@ int TextOut::timeCondition(int a)
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("Data.db");
-    db.open();
+    if (db.open()){
     //Осуществляем запрос
     QSqlQuery query;
     query.exec("SELECT * FROM conditions");
@@ -430,6 +452,10 @@ int TextOut::timeCondition(int a)
     }
     db.close();
     return tmp+20;
+    }else{
+    qDebug()<<"Data.db is not open";
+    return -1;
+}
 }
 
 int TextOut::kolCon()
@@ -437,7 +463,7 @@ int TextOut::kolCon()
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("Data.db");
-    db.open();
+    if (db.open()){
     //Осуществляем запрос
     QSqlQuery query;
     query.exec("SELECT * FROM conditions");
@@ -449,6 +475,10 @@ int TextOut::kolCon()
     }
     db.close();
     return i;
+    } else {
+        qDebug()<<"Data.db is not open";
+        return -1;
+}
 }
 
 int TextOut::maxConTime()
@@ -456,7 +486,7 @@ int TextOut::maxConTime()
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("Data.db");
-    db.open();
+    if (db.open()){
     //Осуществляем запрос
     QSqlQuery query;
     query.exec("SELECT * FROM conditions");
@@ -468,6 +498,10 @@ int TextOut::maxConTime()
     }
     db.close();
     return i+20;
+    } else {
+        qDebug()<<"Data.db is not open";
+        return -1;
+    }
 }
 
 
