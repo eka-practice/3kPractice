@@ -14,6 +14,8 @@ int main(int argc, char *argv[])
     w->show();
 
     //secondprocedure *b = new secondprocedure; //Идет запуск только программы,так как не успел доделать диаграммы
+   // secondwidget *d = new secondwidget();
+   // d->show();
 
     //thirdwidget *c = new thirdwidget(); //Запуск 3 процедуры с отрисовкой диаграмм
     //c->show();

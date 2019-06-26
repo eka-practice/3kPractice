@@ -118,10 +118,10 @@ secondprocedure::secondprocedure()
     }
 
 }
-//Диаграммы к второму алгоритму не успел доделать.
+//Первые две диаграммы к второму алгоритму не успел доделать.
 
-/*QChartView* secondprocedure::CreateFirstDiagramm(){ //Диаграмма строящая ряд распределения времени получения
-//сообщения для получателей
+QChartView* secondprocedure::CreateThirdDiagramm(){ //Осредненный по начальным номерам радиоданных ряд распределения
+    //времени получения сообщения
     QChart *chart;
     QFont font;
     font.setPixelSize(22);
@@ -129,7 +129,12 @@ secondprocedure::secondprocedure()
     lab.setPixelSize(15);
     QPieSeries *series = new QPieSeries();
     for (int i = 0; i < time_number->length(); i++) {
-        series->append(QString::number(i+1), (time_number->at(i))/run_counter);
+        float temp = 0;
+        for (int j = 0; j < time_number->at(i)->length(); j++) {
+            temp += time_number->at(i)->at(j) / run_counter;
+        }
+        temp /= time_number->at(i)->length();
+        series->append(QString::number(i+1), qreal(temp));
         QPieSlice *slice = series->slices().at(i);
         slice->setLabelVisible();
         slice->setExploded();
@@ -146,7 +151,7 @@ secondprocedure::secondprocedure()
     chart->addSeries(series);
     chart->setTitleFont(font);//Шрифт заголовка
     chart->setTitleBrush(QBrush(Qt::black));//Цвет заголовка
-    chart->setTitle("First Diagramm");
+    chart->setTitle("Third Diagramm");
     chart->legend()->setAlignment(Qt::AlignBottom);
     chart->legend()->setFont(lab);
     chart->legend()->setBrush(QBrush(Qt::black));
@@ -158,8 +163,7 @@ secondprocedure::secondprocedure()
     return chartView;
 
 }
-QChartView* secondprocedure::CreateSecondDiagramm(){//Диаграмма строящая вероятности получения сообщения для каждой
-//части получателей
+QChartView* secondprocedure::CreateFourthDiagramm(){//Осредненные по составу радиоданных вероятности
     QChart *chart;
     QFont font;
     font.setPixelSize(22);
@@ -167,7 +171,12 @@ QChartView* secondprocedure::CreateSecondDiagramm(){//Диаграмма стр�
     lab.setPixelSize(15);
     QPieSeries *series = new QPieSeries();
     for (int i = 0; i < Pk->length(); i++) {
-        series->append(QString::number(i+1), qreal(Pk->at(i)));
+        float temp = 0;
+        for (int j = 0; j < Pk->at(i)->length(); j++) {
+            temp += Pk->at(i)->at(j) / run_counter;
+        }
+        temp /= Pk->at(i)->length();
+        series->append(QString::number(i+1), qreal(temp));
         QPieSlice *slice = series->slices().at(i);
         slice->setLabelVisible();
         slice->setExploded();
@@ -184,7 +193,7 @@ QChartView* secondprocedure::CreateSecondDiagramm(){//Диаграмма стр�
     chart->addSeries(series);
     chart->setTitleFont(font);//Шрифт заголовка
     chart->setTitleBrush(QBrush(Qt::black));//Цвет заголовка
-    chart->setTitle("Second Diagramm");
+    chart->setTitle("Fourth Diagramm");
     chart->legend()->setAlignment(Qt::AlignBottom);
     chart->legend()->setFont(lab);
     chart->legend()->setBrush(QBrush(Qt::black));
@@ -196,4 +205,3 @@ QChartView* secondprocedure::CreateSecondDiagramm(){//Диаграмма стр�
     return chartView;
 
 }
-*/

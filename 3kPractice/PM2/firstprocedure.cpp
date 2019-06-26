@@ -76,7 +76,7 @@ Firstprocedure::Firstprocedure()
     QString str;
     for (int i = 0; i < source_number->length();  i++) {
         Pk->append(float(source_number->at(i)) / float(run_counter));
-        str+=QString::number(Pk->last()) + "|";
+        str+=QString::number(Pk->last()) + " |";
     }
     data::CleanFile();
     data::printMessage(QString::number(run_counter));
@@ -86,7 +86,7 @@ Firstprocedure::Firstprocedure()
     str = "";
     for (int i=0;i<time_number->length(); i++){
         Pi->append(time_number->at(i)/run_counter);
-        str+=QString::number(Pi->last()) + "|";
+        str+=QString::number(Pi->last()) + " |";
     }
     str.remove(str.length()-1, 1);
     data::printMessage(str);

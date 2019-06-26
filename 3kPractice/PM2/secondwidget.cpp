@@ -10,8 +10,8 @@ secondwidget::secondwidget(QWidget *parent) :
 
     //ui->secondprocedurelayout->addWidget(proc->CreateFirstDiagramm());
    // ui->secondprocedurelayout->addWidget(proc->CreateSecondDiagramm());
-   // ui->secondprocedurelayout->addWidget(proc->CreateThirdDiagramm());
-   // ui->secondprocedurelayout->addWidget(proc->CreateFourthDiagramm());
+   ui->secondprocedurelayout->addWidget(proc->CreateThirdDiagramm());
+   ui->secondprocedurelayout->addWidget(proc->CreateFourthDiagramm());
 }
 
 secondwidget::~secondwidget()
