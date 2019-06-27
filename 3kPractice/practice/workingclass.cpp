@@ -66,9 +66,6 @@ WorkingClass::WorkingClass()
                 }
             }
 
-            // Запуск программы Даниила
-            // ...
-
             // Получение данных
             // Чтение протокола из txt-файла
             QFile protocol("proto.txt");
