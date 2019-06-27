@@ -16,25 +16,20 @@
 // Директивы имен таблиц и их полей
 
 #define TABLE_SOURCE            "Source"
-#define TABLE_RECEIVER          "Receiver"
+#define TABLE_INPUT             "Input"
 
 #define K                       "K"
-#define CONDITION               "Condition"
-#define NUMBER                  "Number"
-#define AK                      "Ak"
-#define BK                      "Bk"
 #define START_TIME              "StartTime"
+#define INFLUENCE_TIME          "InfluenceTime"
+#define INFLUENCE_PROBABILITY   "InfluenceProbability"
 #define REPEAT_DURATION         "RepeatDuration"
 #define MAX_REPEAT_COUNT        "MaxRepeatCount"
-#define F_MESSAGE_SENT          "FMessageSent"
-#define BROKEN_TIME             "BrokenTime"
-#define MAX_SEARCH_TIME         "MaxSearchTime"
-#define MAX_SYNC_PROBABILITY    "MaxSyncProbability"
-#define MAX_WAIT_TIME           "MaxWaitTime"
-#define F_SYNC_LOST             "FSyncLost"
-#define NUM                     "N"
+#define CONDITION               "Condition"
+
+#define RECEIVE_PROBABILITY     "ReceiveProbability"
 #define SEQUENCE                "Sequence"
 #define N0                      "n0"
+#define DEVICE_TYPE             "C"
 
 class Database : public QObject
 {

@@ -1,16 +1,11 @@
-#include "mainwindow.h"
 #include <QCoreApplication>
-#include "world.h"
-#include "locale.h"
+#include "workingclass.h"
 
 int main(int argc, char *argv[])
 {
-    setlocale(LC_ALL, "Rus");
-
     QCoreApplication a(argc, argv);
 
-    World *wrld = new World();
-    wrld->modelStart();
+    WorkingClass* wc = new WorkingClass();
 
     return a.exec();
 }
