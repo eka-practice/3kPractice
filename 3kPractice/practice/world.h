@@ -17,11 +17,15 @@ class World : public QObject
 
 public:
     World();
-    World(QStringList *IDs, QVector<unsigned int>* radioNum, int modelTime = 0);
+    World(QStringList *IDs, QVector<int>* radioNum, int modelTime = 0);
 
     ~World();
     // Старт модели
     void modelStart();
+
+    void modelRestart();
+
+    void calcMinTime();
 
     QVector<AbstractSource*>* getSources() { return sources; }
 
@@ -40,6 +44,8 @@ public:
 
     static int getSyncCancelledTime();
     static void setSyncCancelledTime(int time);
+
+    static int getCurChannel() { return curChannel; }
 
     const int worldDeltaSeconds = 10; // Постоянная для тика времени - 1000мс
 
@@ -62,10 +68,16 @@ private:
 
     static int syncCancelled; // Модельное время завершения процесса синхронизации
 
+    QVector<int>* receiveTime;
+
+    QVector<int>* radioNums;
+    static int curChannel;
+
 private slots:
     void worldTick();
     void startTimer();
     void messageReceivedSlot();
+    void messageNotReceivedSlot();
 
 signals:
     void ticked(); // TODO: Должен передавать source'ы

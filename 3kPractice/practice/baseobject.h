@@ -15,6 +15,7 @@ public:
     bool isStarted() { return started; }
 
     void start();
+    virtual void restart();
     void stop();
 
     unsigned int getID() { return ID; }

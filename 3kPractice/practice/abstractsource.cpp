@@ -51,6 +51,12 @@ AbstractSource::AbstractSource(QSqlRecord DBRecord, QObject *parent) : BaseObjec
     }
 }
 
+void AbstractSource::restart() {
+    curRepeat = 0;
+    sending = false;
+    stop();
+}
+
 AbstractSource::~AbstractSource() {}
 
 ECondition AbstractSource::getCondition(int time)
@@ -79,12 +85,16 @@ void AbstractSource::tick()
         // Если время синхронизации вышло - заканчиваем её
         if (syncCancelledTime > World::getModelTime()) {
             sending = false;
-            curReapeat = 0;
+            curRepeat = 0;
         }
         // Иначе - инкремент повтора
         else if (startTime <= World::getModelTime()) {
             sending = true;
-            curReapeat++;
+            curRepeat++;
+        }
+        if (World::getModelTime() >= brokenTime) {
+            stop();
+            emit workStopped();
         }
     }
     else if (startTime != -1 && World::getModelTime() > startTime && World::getModelTime() < brokenTime) {

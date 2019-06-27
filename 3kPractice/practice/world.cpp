@@ -8,6 +8,7 @@ bool World::syncedOnce = false;
 bool World::messageReceived = false;
 int World::lastWorkingInterval = 0;
 int World::syncCancelled = 0;
+int World::curChannel = 0;
 
 World::World()
 {
@@ -19,11 +20,17 @@ World::World()
     QSqlQuery *qry = new QSqlQuery();
     sources = new QVector<AbstractSource*>();
 
+    radioNums = new QVector<int>();
+
     qry->prepare("SELECT * FROM DEVICES");
     qry->exec();
     while (qry->next()) {
         if (qry->value(DEVICE_TYPE).toInt() == 1) { // тип устройства - приёмник
             receiver = new AbstractReceiver(qry->record(), sources, this);
+            QStringList lst = qry->value(N0).toString().split("|");
+            for (int i = 0; i < lst.length(); i++) {
+                radioNums->append(lst.at(i).toInt());
+            }
         }
         else if (qry->value(DEVICE_TYPE).toInt() == 0) { // источник
             AbstractSource *newSrc = new AbstractSource(qry->record(), this);
@@ -57,9 +64,15 @@ World::World()
 
     // Старт модели
     modelStart();
+
+    connect(receiver, SIGNAL(messageReceived()), this, SLOT(messageReceivedSlot())); // Должен коннектить не только приёмник
+    connect(receiver, SIGNAL(messageNotReceived()), this, SLOT(messageNotReceivedSlot()));
+
+    receiveTime = new QVector<int>();
+    curChannel = 1;
 }
 
-World::World(QStringList *IDs, QVector<unsigned int>* radioNum, int modelTime)
+World::World(QStringList *IDs, QVector<int>* radioNum, int modelTime)
 {
     // Подключение к БД
     db = new Database();
@@ -91,6 +104,10 @@ World::World(QStringList *IDs, QVector<unsigned int>* radioNum, int modelTime)
                 Retranslator *newSrc = new Retranslator(qry->record(), sources, this);
                 sources->push_back(newSrc->getSource());
 
+
+                connect(newSrc->getReceiver(), SIGNAL(messageReceived()), this, SLOT(messageReceivedSlot()));
+                connect(newSrc->getReceiver(), SIGNAL(messageNotReceived()), this, SLOT(messageNotReceivedSlot()));
+
                 if (newSrc->getSource()->getSyncCancelledTime() > getLastWorkingInterval()) {
                     setLastWorkingInterval(int(newSrc->getSource()->getBrokenTime()));
                 }
@@ -106,7 +123,7 @@ World::World(QStringList *IDs, QVector<unsigned int>* radioNum, int modelTime)
         }
     }
     if (F == nullptr) {
-        receiver = new AbstractReceiver(receiverRecord, sources, radioNum, this);
+        receiver = new AbstractReceiver(receiverRecord, sources, radioNum->at(0), this);
     }
     else {
         receiver = static_cast<Retranslator*>(F->parent())->getReceiver();
@@ -129,10 +146,48 @@ World::World(QStringList *IDs, QVector<unsigned int>* radioNum, int modelTime)
     // Старт модели
     modelStart();
 
-    connect(receiver, SIGNAL(messageReceived()), this, SLOT(messageReceivedSlot()));
+    connect(receiver, SIGNAL(messageReceived()), this, SLOT(messageReceivedSlot())); // Должен коннектить не только приёмник
+    connect(receiver, SIGNAL(messageNotReceived()), this, SLOT(messageNotReceivedSlot()));
+
+    receiveTime = new QVector<int>();
+    curChannel = 1;
+    radioNums = radioNum;
 }
 
 void World::messageReceivedSlot() {
+    receiveTime->append(getModelTime());
+    if (curChannel < receiver->getChannelsNum()) {
+        modelRestart();
+        curChannel++;
+    }
+    else {
+        // calcMinTime();
+    }
+}
+
+void World::messageNotReceivedSlot() {
+    if (curChannel < receiver->getChannelsNum()) {
+        modelRestart();
+    }
+    else {
+        // calcMinTime();
+    }
+}
+
+void World::calcMinTime() {
+    Log::CleanLogFile("output.txt");
+    if (receiveTime->length() > 0) {
+        int n = receiveTime->at(0);
+        for (int i = 1; i < receiveTime->length(); i++) {
+            if (receiveTime->at(i) < n) {
+                n = receiveTime->at(i);
+            }
+        }
+        Log::printMessage(QString::number(n), false, true, "output.txt");
+    }
+//    else {
+//        Log::printMessage("-1", false, true, "output.txt");
+//    }
     QApplication::exit();
 }
 
@@ -149,15 +204,37 @@ void World::modelStart()
     started = true;
 }
 
+void World::modelRestart()
+{
+    started = true;
+    setModelTime(0);
+    receiver->setN0(radioNums->at(curChannel));
+    receiver->restart();
+    receiver->start();
+    for (int i = 0; i < sources->length(); i++) {
+        sources->at(i)->restart();
+    }
+    messageReceived = false;
+}
+
 void World::worldTick() {
     if (started) {
 
 		// Добавление времени модели
         World::modelTime += 1;
-
         emit ticked();
+
+        for (int i = 0; i < sources->length(); i++) {
+            if (sources->at(i)->isStarted()) {
+                return;
+            }
+        }
+        if (modelTime > lastWorkingInterval) {
+            started = false;
+        }
     }
     else {
+        calcMinTime();
         QApplication::exit();
     }
 }

@@ -20,6 +20,8 @@ public:
     AbstractSource(QSqlRecord DBRecord, QObject *parent = nullptr);
     virtual ~AbstractSource() override;
 
+    virtual void restart() override;
+
     // get/set-функции
 
     int getStartTime() { return startTime; }
@@ -44,7 +46,7 @@ public:
 
     int getMaxRepeatCount() { return maxRepeatCount; }
 
-    int getCurRepeat() { return curReapeat; }
+    int getCurRepeat() { return curRepeat; }
 
     unsigned int getK() { return k; }
 
@@ -71,7 +73,7 @@ private:
 
     int syncCancelledTime; // Время конца синхронизации
 
-    int curReapeat = 0; // Текущий номер повтора
+    int curRepeat = 0; // Текущий номер повтора
 
     bool sending = false; // Отправляется ли сообщение
 

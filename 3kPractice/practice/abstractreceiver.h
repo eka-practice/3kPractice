@@ -21,15 +21,14 @@ public:
     // DBRecord - запись базы данных об этом приёмнике
     AbstractReceiver(QSqlRecord DBRecord, QVector<AbstractSource*> *sources, QObject *parent = nullptr); // Для полного считывания из базы
     // Для вызова из другой программы
-    AbstractReceiver(QSqlRecord DBRecord, QVector<AbstractSource *> *sources, QVector<unsigned int>* radioNum, QObject *parent = nullptr);
-    AbstractReceiver(QSqlRecord DBRecord, QVector<AbstractSource*> *sources, unsigned int radioNum, QObject *parent = nullptr);
+    AbstractReceiver(QSqlRecord DBRecord, QVector<AbstractSource*> *sources, int radioNum, QObject *parent = nullptr);
     virtual ~AbstractReceiver() override {}
 
     // get/set функции
 
     void setN(unsigned int n) { Num = n; }
     void setSeq(QVector<unsigned int>* s) { sequence = s; }
-    void setN0(unsigned int n, int i) { n0->removeAt(i); n0->insert(i, n); }
+    void setN0(int n) { n0 = n; }
 
     // Из-за каналов - все функции принимают номер канала
     bool isSyncing() { return syncing; }
@@ -43,8 +42,12 @@ public:
 
     int getCurCoincidenceSourceNum() { return curCoincidenceSourceNum; }
 
+    int getChannelsNum() { return channelsNum; }
+
     // Функция вычислений после синхронизации с источником
     void SyncedCalcs(QVector<AbstractSource*> *sources);
+
+    virtual void restart() override;
 
 protected slots:
     // tick-функция
@@ -53,7 +56,7 @@ protected slots:
 private:
     unsigned int Num; // N // Число радиоданных
     QVector<unsigned int>* sequence; // k1->k2->k3->...kn->k1 // Порядок следования радиоданных
-    QVector<unsigned int>* n0; // n0 // Порядковый номер радиоданных приёмника на нулевое модельное время /// Поидее тоже вектор
+    int n0; // n0 // Порядковый номер радиоданных приёмника на нулевое модельное время
     int channelsNum; // Кол-во каналов в приёмнике
     int searchInterval; // tип // Интервал поиска
 
@@ -70,8 +73,8 @@ private:
 
     AbstractSource *curSrc; // Текущий источник, с которым работает приёмник
 
-    QVector<unsigned int>* curRadioNum; // Текущий номер радиоданных в последовательности
-    unsigned int syncingNum;
+    int curRadioNum; // Текущий номер радиоданных в последовательности
+    int syncingNum;
 
     QVector<AbstractSource*> *sources; // Все источники мира
 

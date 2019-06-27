@@ -18,3 +18,5 @@ void BaseObject::stop() {
 		emit workStopped();
     }
 }
+
+void BaseObject::restart() {}

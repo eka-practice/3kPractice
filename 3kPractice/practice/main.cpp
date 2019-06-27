@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
         QString radioStr = file.readLine();
         if (radioStr.split('|').length() >= 1) {
             QStringList radioLst = radioStr.split('|');
-            QVector<unsigned int> *radioNum = new QVector<unsigned int>();
+            QVector<int> *radioNum = new QVector<int>();
             for (int i = 0; i < radioLst.length(); i++) {
                 radioNum->push_back(radioLst.at(i).toUInt());
             }

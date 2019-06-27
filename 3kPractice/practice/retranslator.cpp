@@ -45,3 +45,8 @@ void Retranslator::received()
 {
     mReceived = true;
 }
+
+void Retranslator::restart() {
+    source->restart();
+    receiver->restart();
+}

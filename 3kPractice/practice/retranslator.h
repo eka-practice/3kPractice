@@ -14,6 +14,8 @@ public:
 
     virtual ~Retranslator() override {}
 
+    virtual void restart() override;
+
     AbstractSource* getSource() { return source; }
     AbstractReceiver* getReceiver() { return receiver; }
 

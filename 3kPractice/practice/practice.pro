@@ -43,8 +43,7 @@ HEADERS += \
     timeinterval.h \
     world.h \
     baseobject.h \
-    log.h \
-    info.h
+    log.h
 
 FORMS +=
 
