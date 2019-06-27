@@ -26,8 +26,8 @@ private:
     QVector<QVector<int>*> *n0; // Ряды начальных радиоданных
     QVector<Source*> *sources; // Источники
 
-    QVector<QVector<float>*>* timeRows; // Ряд распределения времени (От Гриба)
-    QVector<QVector<float>*>* mReceivePeriodicity; // Частоты получения сообщения (От Гриба)
+    QVector<QVector<float>*>* timeRows; // Ряд распределения времени
+    QVector<QVector<float>*>* mReceivePeriodicity; // Частоты получения сообщения
 
     // Тп(K) - время поражения??
     QVector<int>* brokenTime;
