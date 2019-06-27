@@ -97,25 +97,28 @@ WorkingClass::WorkingClass()
 
     QVector<QVector<float>*>* pareto = new QVector<QVector<float>*>();
 
-    for (int i = 0; i < sources->length(); i++) {
+    for (int i = 0; i < timeRows->length(); i++) {
         // Находим максимальную вероятность
         float max = 0;
-        for (int j = 0; j < 20; j++) {
-            if (timeRows->at(j)->at(i) > max) {
-                max = timeRows->at(j)->at(i);
+        for (int j = 0; j < timeRows->at(i)->length(); j++) {
+            if (timeRows->at(i)->at(j) > max) {
+                max = timeRows->at(i)->at(j);
             }
         }
-        for (int j = 19; j >= 0; j++) {
-            if (timeRows->at(j)->at(i) == max) {
-                pareto->append(timeRows->at(j));
+        for (int j = 0; j < timeRows->at(i)->length(); j++) {
+            if (timeRows->at(i)->at(j) == max) {
+                pareto->append(timeRows->at(i));
             }
         }
     }
 
     for (int i = 0; i < pareto->length(); i++) {
+        QString str = "";
         for (int j = 0; j < pareto->at(i)->length(); j++) {
-            qDebug() << pareto->at(i)->at(j) << " ";
+            str += QString::number(pareto->at(i)->at(j)) + " ";
         }
+        str.remove(str.length(), 1);
+        qDebug() << str;
     }
 }
 
